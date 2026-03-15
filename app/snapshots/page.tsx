@@ -14,6 +14,8 @@ import {
   currencies,
   markets,
 } from "@/lib/domain/snapshot";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { getLocale } from "@/lib/i18n/locale";
 
 type SnapshotsPageProps = {
   searchParams?: Promise<{
@@ -35,6 +37,8 @@ function formatAmount(amount: string, currency: string) {
 export default async function SnapshotsPage({
   searchParams,
 }: SnapshotsPageProps) {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const params = searchParams ? await searchParams : undefined;
   const filters = normalizeSnapshotListFilters((params ?? {}) as Record<string, string | undefined>);
   let dbNotReady = false;
@@ -50,9 +54,9 @@ export default async function SnapshotsPage({
   return (
     <section className="space-y-6">
       <PageHeader
-        eyebrow="Snapshots"
-        title="Monthly snapshot list"
-        description="A simple server-rendered list placeholder for upcoming filtering and CRUD work."
+        eyebrow={t.snapshots.eyebrow}
+        title={t.snapshots.title}
+        description={t.snapshots.description}
       />
       {params?.message ? (
         <p className="rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm text-stone-700 shadow-sm">
@@ -61,21 +65,21 @@ export default async function SnapshotsPage({
       ) : null}
       {dbNotReady ? (
         <SectionCard
-          title="Database not ready"
-          description="Run the Prisma migration and seed steps before using the snapshot list."
+          title={t.snapshots.dbNotReadyTitle}
+          description={t.snapshots.dbNotReadyDescription}
         />
       ) : null}
-      <SectionCard title="Recent snapshot rows">
+      <SectionCard title={t.snapshots.tableTitle}>
         {!dbNotReady ? (
           <form className="grid gap-3 md:grid-cols-3" method="get">
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              <span>Snapshot Month</span>
+              <span>{t.snapshots.filters.snapshotMonth}</span>
               <select
                 name="snapshotMonth"
                 defaultValue={filters.snapshotMonth ?? ""}
                 className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm"
               >
-                <option value="">All</option>
+                <option value="">{t.common.all}</option>
                 {snapshotMonths.map((month) => (
                   <option key={month} value={month}>
                     {month}
@@ -84,13 +88,13 @@ export default async function SnapshotsPage({
               </select>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              <span>Account</span>
+              <span>{t.snapshots.filters.account}</span>
               <select
                 name="account"
                 defaultValue={filters.account ?? ""}
                 className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm"
               >
-                <option value="">All</option>
+                <option value="">{t.common.all}</option>
                 {accounts.map((account) => (
                   <option key={account.id} value={account.id}>
                     {account.name}
@@ -99,57 +103,57 @@ export default async function SnapshotsPage({
               </select>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              <span>Market</span>
+              <span>{t.snapshots.filters.market}</span>
               <select
                 name="market"
                 defaultValue={filters.market ?? ""}
                 className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm"
               >
-                <option value="">All</option>
+                <option value="">{t.common.all}</option>
                 {markets.map((market) => (
                   <option key={market} value={market}>
-                    {market}
+                    {t.labels.market[market]}
                   </option>
                 ))}
               </select>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              <span>Asset Category</span>
+              <span>{t.snapshots.filters.assetCategory}</span>
               <select
                 name="assetCategory"
                 defaultValue={filters.assetCategory ?? ""}
                 className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm"
               >
-                <option value="">All</option>
+                <option value="">{t.common.all}</option>
                 {assetCategories.map((category) => (
                   <option key={category} value={category}>
-                    {category}
+                    {t.labels.assetCategory[category]}
                   </option>
                 ))}
               </select>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              <span>Currency</span>
+              <span>{t.snapshots.filters.currency}</span>
               <select
                 name="currency"
                 defaultValue={filters.currency ?? ""}
                 className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm"
               >
-                <option value="">All</option>
+                <option value="">{t.common.all}</option>
                 {currencies.map((currency) => (
                   <option key={currency} value={currency}>
-                    {currency}
+                    {t.labels.currency[currency]}
                   </option>
                 ))}
               </select>
             </label>
             <label className="space-y-2 text-sm font-medium text-stone-700">
-              <span>Keyword</span>
+              <span>{t.snapshots.filters.keyword}</span>
               <input
                 name="keyword"
                 defaultValue={filters.keyword ?? ""}
                 className="w-full rounded-xl border border-stone-300 px-3 py-2 text-sm"
-                placeholder="Asset name"
+                placeholder={t.snapshots.filters.keywordPlaceholder}
               />
             </label>
             <div className="md:col-span-3 flex gap-3">
@@ -157,13 +161,13 @@ export default async function SnapshotsPage({
                 type="submit"
                 className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white"
               >
-                Apply Filters
+                {t.snapshots.filters.apply}
               </button>
               <Link
                 href="/snapshots"
                 className="rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700"
               >
-                Reset
+                {t.snapshots.filters.reset}
               </Link>
             </div>
           </form>
@@ -173,13 +177,15 @@ export default async function SnapshotsPage({
             <table className="min-w-full text-left text-sm">
               <thead className="text-stone-500">
                 <tr>
-                  <th className="pb-3 pr-4 font-medium">Month</th>
-                  <th className="pb-3 pr-4 font-medium">Account</th>
-                  <th className="pb-3 pr-4 font-medium">Asset</th>
-                  <th className="pb-3 pr-4 font-medium">Market</th>
-                  <th className="pb-3 pr-4 font-medium">Amount</th>
-                  <th className="pb-3 pr-4 font-medium">Return</th>
-                  <th className="pb-3 font-medium">Actions</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.month}</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.account}</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.asset}</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.market}</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.category}</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.currency}</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.amount}</th>
+                  <th className="pb-3 pr-4 font-medium">{t.snapshots.table.returnRate}</th>
+                  <th className="pb-3 font-medium">{t.snapshots.table.actions}</th>
                 </tr>
               </thead>
               <tbody>
@@ -188,7 +194,11 @@ export default async function SnapshotsPage({
                     <td className="py-3 pr-4">{snapshot.snapshotMonth}</td>
                     <td className="py-3 pr-4">{snapshot.account.name}</td>
                     <td className="py-3 pr-4">{snapshot.assetName}</td>
-                    <td className="py-3 pr-4">{snapshot.market}</td>
+                    <td className="py-3 pr-4">{t.labels.market[snapshot.market]}</td>
+                    <td className="py-3 pr-4">
+                      {t.labels.assetCategory[snapshot.assetCategory]}
+                    </td>
+                    <td className="py-3 pr-4">{t.labels.currency[snapshot.currency]}</td>
                     <td className="py-3 pr-4">
                       {formatAmount(snapshot.amount.toString(), snapshot.currency)}
                     </td>
@@ -199,7 +209,7 @@ export default async function SnapshotsPage({
                           href={`/snapshots/${snapshot.id}/edit`}
                           className="text-sm font-medium text-stone-700 underline-offset-4 hover:underline"
                         >
-                          Edit
+                          {t.snapshots.table.edit}
                         </Link>
                         <form action={deleteSnapshotAction}>
                           <input type="hidden" name="id" value={snapshot.id} />
@@ -207,7 +217,7 @@ export default async function SnapshotsPage({
                             type="submit"
                             className="text-sm font-medium text-red-700 underline-offset-4 hover:underline"
                           >
-                            Delete
+                            {t.snapshots.table.delete}
                           </button>
                         </form>
                       </div>
@@ -218,9 +228,7 @@ export default async function SnapshotsPage({
             </table>
           </div>
         ) : !dbNotReady ? (
-          <p className="text-sm leading-6 text-stone-600">
-            No snapshots match the current filters. Add or import monthly snapshots to get started.
-          </p>
+          <p className="text-sm leading-6 text-stone-600">{t.snapshots.empty}</p>
         ) : null}
       </SectionCard>
     </section>

@@ -5,10 +5,27 @@ import {
 } from "@/lib/domain/snapshot";
 import type { Account, AssetSnapshot } from "@prisma/client";
 
+type SnapshotFormLabels = {
+  snapshotMonth: string;
+  assetName: string;
+  amount: string;
+  returnRate: string;
+  account: string;
+  market: string;
+  assetCategory: string;
+  currency: string;
+  memo: string;
+  submit: string;
+};
+
 type SnapshotFormProps = {
   accounts: Account[];
   action: (formData: FormData) => void | Promise<void>;
   submitLabel?: string;
+  labels: SnapshotFormLabels;
+  marketLabels: Record<(typeof markets)[number], string>;
+  assetCategoryLabels: Record<(typeof assetCategories)[number], string>;
+  currencyLabels: Record<(typeof currencies)[number], string>;
   snapshot?: Pick<
     AssetSnapshot,
     | "id"
@@ -25,11 +42,27 @@ type SnapshotFormProps = {
 };
 
 const fields = [
-  { name: "snapshotMonth", label: "Snapshot Month", type: "month" },
-  { name: "assetName", label: "Asset Name", type: "text" },
-  { name: "amount", label: "Amount", type: "number" },
-  { name: "returnRate", label: "Return Rate (%)", type: "number" },
+  { name: "snapshotMonth", type: "month" },
+  { name: "assetName", type: "text" },
+  { name: "amount", type: "number" },
+  { name: "returnRate", type: "number" },
 ] as const;
+
+function getFieldLabel(name: (typeof fields)[number]["name"], labels: SnapshotFormLabels) {
+  if (name === "snapshotMonth") {
+    return labels.snapshotMonth;
+  }
+
+  if (name === "assetName") {
+    return labels.assetName;
+  }
+
+  if (name === "amount") {
+    return labels.amount;
+  }
+
+  return labels.returnRate;
+}
 
 function getDefaultValue(
   fieldName: (typeof fields)[number]["name"],
@@ -49,7 +82,11 @@ function getDefaultValue(
 export function SnapshotForm({
   accounts,
   action,
-  submitLabel = "Save Snapshot",
+  submitLabel,
+  labels,
+  marketLabels,
+  assetCategoryLabels,
+  currencyLabels,
   snapshot,
 }: SnapshotFormProps) {
   return (
@@ -58,7 +95,7 @@ export function SnapshotForm({
 
       {fields.map((field) => (
         <label key={field.name} className="space-y-2 text-sm font-medium text-stone-700">
-          <span>{field.label}</span>
+          <span>{getFieldLabel(field.name, labels)}</span>
           <input
             name={field.name}
             type={field.type}
@@ -70,7 +107,7 @@ export function SnapshotForm({
       ))}
 
       <label className="space-y-2 text-sm font-medium text-stone-700">
-        <span>Account</span>
+        <span>{labels.account}</span>
         <select
           name="accountId"
           defaultValue={snapshot?.accountId ?? accounts[0]?.id ?? ""}
@@ -85,7 +122,7 @@ export function SnapshotForm({
       </label>
 
       <label className="space-y-2 text-sm font-medium text-stone-700">
-        <span>Market</span>
+        <span>{labels.market}</span>
         <select
           name="market"
           defaultValue={snapshot?.market ?? markets[0]}
@@ -93,14 +130,14 @@ export function SnapshotForm({
         >
           {markets.map((option) => (
             <option key={option} value={option}>
-              {option}
+              {marketLabels[option]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="space-y-2 text-sm font-medium text-stone-700">
-        <span>Asset Category</span>
+        <span>{labels.assetCategory}</span>
         <select
           name="assetCategory"
           defaultValue={snapshot?.assetCategory ?? assetCategories[0]}
@@ -108,14 +145,14 @@ export function SnapshotForm({
         >
           {assetCategories.map((option) => (
             <option key={option} value={option}>
-              {option}
+              {assetCategoryLabels[option]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="space-y-2 text-sm font-medium text-stone-700">
-        <span>Currency</span>
+        <span>{labels.currency}</span>
         <select
           name="currency"
           defaultValue={snapshot?.currency ?? currencies[0]}
@@ -123,14 +160,14 @@ export function SnapshotForm({
         >
           {currencies.map((option) => (
             <option key={option} value={option}>
-              {option}
+              {currencyLabels[option]}
             </option>
           ))}
         </select>
       </label>
 
       <label className="space-y-2 text-sm font-medium text-stone-700 md:col-span-2">
-        <span>Memo</span>
+        <span>{labels.memo}</span>
         <textarea
           name="memo"
           rows={4}
@@ -144,7 +181,7 @@ export function SnapshotForm({
           type="submit"
           className="rounded-full bg-stone-900 px-5 py-2.5 text-sm font-medium text-white"
         >
-          {submitLabel}
+          {submitLabel ?? labels.submit}
         </button>
       </div>
     </form>

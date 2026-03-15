@@ -12,6 +12,8 @@ import {
   getTopAssets,
   getTotalAssetsByCurrency,
 } from "@/lib/domain/aggregation";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { getLocale } from "@/lib/i18n/locale";
 
 type DashboardPageProps = {
   searchParams?: Promise<{
@@ -21,9 +23,10 @@ type DashboardPageProps = {
 
 function formatCurrencyTotals(
   totals: { currency: string; totalAmount: number }[],
+  noDataLabel: string,
 ) {
   if (totals.length === 0) {
-    return "No data";
+    return noDataLabel;
   }
 
   return totals.map((total) => `${total.totalAmount} ${total.currency}`).join(" / ");
@@ -44,13 +47,15 @@ function getLatestSnapshotMonth(
 export default async function DashboardPage({
   searchParams,
 }: DashboardPageProps) {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const params = searchParams ? await searchParams : undefined;
   let dbNotReady = false;
-  let snapshots = await listSnapshots().catch((error) => {
+  const snapshots = await listSnapshots().catch((error) => {
     dbNotReady = isDatabaseSetupError(error);
     return [];
   });
-  let snapshotMonths = await listSnapshotMonths().catch(() => []);
+  const snapshotMonths = await listSnapshotMonths().catch(() => []);
   const snapshotMonth = getLatestSnapshotMonth(
     snapshots,
     snapshotMonths,
@@ -75,20 +80,20 @@ export default async function DashboardPage({
   return (
     <section className="space-y-6">
       <PageHeader
-        eyebrow="Dashboard"
-        title="Monthly portfolio overview"
-        description="This MVP starts with a calm monthly snapshot workflow: record holdings, review allocation, and compare month over month."
+        eyebrow={t.dashboard.eyebrow}
+        title={t.dashboard.title}
+        description={t.dashboard.description}
       />
       {dbNotReady ? (
         <SectionCard
-          title="Database not ready"
-          description="Run the Prisma migration and seed steps before using the dashboard."
+          title={t.dashboard.dbNotReadyTitle}
+          description={t.dashboard.dbNotReadyDescription}
         />
       ) : null}
       {!dbNotReady && snapshotMonths.length > 0 ? (
         <form className="flex flex-wrap items-end gap-3" method="get">
           <label className="space-y-2 text-sm font-medium text-stone-700">
-            <span>Snapshot Month</span>
+            <span>{t.dashboard.snapshotMonth}</span>
             <select
               name="snapshotMonth"
               defaultValue={snapshotMonth}
@@ -105,27 +110,30 @@ export default async function DashboardPage({
             type="submit"
             className="rounded-full bg-stone-900 px-4 py-2 text-sm font-medium text-white"
           >
-            Apply
+            {t.common.apply}
           </button>
         </form>
       ) : null}
       <p className="text-sm text-stone-600">
-        Selected month: <span className="font-medium text-stone-900">{snapshotMonth || "N/A"}</span>
+        {t.common.selectedMonth}:{" "}
+        <span className="font-medium text-stone-900">
+          {snapshotMonth || t.common.notAvailable}
+        </span>
       </p>
       {!dbNotReady && snapshotMonths.length === 0 ? (
         <SectionCard
-          title="No dashboard data"
-          description="Add or import monthly snapshots to see allocation summaries."
+          title={t.dashboard.emptyTitle}
+          description={t.dashboard.emptyDescription}
         />
       ) : null}
 
       {!dbNotReady && snapshotMonths.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2">
           <SectionCard
-            title="Total assets"
-            description={formatCurrencyTotals(totalAssets)}
+            title={t.dashboard.totalAssets}
+            description={formatCurrencyTotals(totalAssets, t.common.noData)}
           />
-          <SectionCard title="Top assets">
+          <SectionCard title={t.dashboard.topAssets}>
             <ul className="space-y-2 text-sm text-stone-700">
               {topAssets.length > 0 ? (
                 topAssets.map((asset) => (
@@ -134,46 +142,52 @@ export default async function DashboardPage({
                   </li>
                 ))
               ) : (
-                <li>No data</li>
+                <li>{t.common.noData}</li>
               )}
             </ul>
           </SectionCard>
-          <SectionCard title="Assets by account">
+          <SectionCard title={t.dashboard.byAccount}>
             <ul className="space-y-2 text-sm text-stone-700">
               {byAccount.length > 0 ? (
                 byAccount.map((item) => (
                   <li key={item.label}>
-                    {item.label}: {formatCurrencyTotals(item.totals)}
+                    {item.label}: {formatCurrencyTotals(item.totals, t.common.noData)}
                   </li>
                 ))
               ) : (
-                <li>No data</li>
+                <li>{t.common.noData}</li>
               )}
             </ul>
           </SectionCard>
-          <SectionCard title="Assets by market">
+          <SectionCard title={t.dashboard.byMarket}>
             <ul className="space-y-2 text-sm text-stone-700">
               {byMarket.length > 0 ? (
                 byMarket.map((item) => (
                   <li key={item.label}>
-                    {item.label}: {formatCurrencyTotals(item.totals)}
+                    {t.labels.market[item.label as "KR" | "US"]}:{" "}
+                    {formatCurrencyTotals(item.totals, t.common.noData)}
                   </li>
                 ))
               ) : (
-                <li>No data</li>
+                <li>{t.common.noData}</li>
               )}
             </ul>
           </SectionCard>
-          <SectionCard title="Assets by asset category">
+          <SectionCard title={t.dashboard.byCategory}>
             <ul className="space-y-2 text-sm text-stone-700">
               {byCategory.length > 0 ? (
                 byCategory.map((item) => (
                   <li key={item.label}>
-                    {item.label}: {formatCurrencyTotals(item.totals)}
+                    {
+                      t.labels.assetCategory[
+                        item.label as "STOCK" | "ETF" | "BOND" | "ELB" | "TDF"
+                      ]
+                    }
+                    : {formatCurrencyTotals(item.totals, t.common.noData)}
                   </li>
                 ))
               ) : (
-                <li>No data</li>
+                <li>{t.common.noData}</li>
               )}
             </ul>
           </SectionCard>
