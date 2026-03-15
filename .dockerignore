@@ -1,0 +1,11 @@
+.git
+.gitignore
+.next
+coverage
+dist
+node_modules
+npm-debug.log
+.env
+.env.local
+prisma/dev.db
+dev.db
