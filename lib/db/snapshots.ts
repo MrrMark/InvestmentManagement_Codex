@@ -10,6 +10,7 @@ import {
   normalizeSnapshotListFilters,
   type SnapshotListFilters,
 } from "@/lib/domain/snapshot-filters";
+import { defaultLocale, type Locale } from "@/lib/i18n/locale";
 
 const snapshotInclude = {
   account: true,
@@ -20,8 +21,11 @@ function getStringValue(value: FormDataEntryValue | null) {
   return typeof value === "string" ? value : "";
 }
 
-export function parseCreateSnapshotFormData(formData: FormData) {
-  return createSnapshotSchema.parse({
+export function parseCreateSnapshotFormData(
+  formData: FormData,
+  locale: Locale = defaultLocale,
+) {
+  return createSnapshotSchema(locale).parse({
     snapshotMonth: getStringValue(formData.get("snapshotMonth")),
     accountId: getStringValue(formData.get("accountId")),
     market: getStringValue(formData.get("market")),
@@ -34,8 +38,11 @@ export function parseCreateSnapshotFormData(formData: FormData) {
   });
 }
 
-export function parseUpdateSnapshotFormData(formData: FormData) {
-  return updateSnapshotSchema.parse({
+export function parseUpdateSnapshotFormData(
+  formData: FormData,
+  locale: Locale = defaultLocale,
+) {
+  return updateSnapshotSchema(locale).parse({
     id: getStringValue(formData.get("id")),
     snapshotMonth: getStringValue(formData.get("snapshotMonth")),
     accountId: getStringValue(formData.get("accountId")),
@@ -49,11 +56,14 @@ export function parseUpdateSnapshotFormData(formData: FormData) {
   });
 }
 
-export function parseImportSnapshotRowsFormData(formData: FormData) {
+export function parseImportSnapshotRowsFormData(
+  formData: FormData,
+  locale: Locale = defaultLocale,
+) {
   const rowsJson = getStringValue(formData.get("rowsJson"));
   const rows = JSON.parse(rowsJson) as unknown;
 
-  return z.array(importSnapshotCsvRowSchema).parse(rows);
+  return z.array(importSnapshotCsvRowSchema(locale)).parse(rows);
 }
 
 export async function getDefaultUser() {

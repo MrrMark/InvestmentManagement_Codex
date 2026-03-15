@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { ZodError } from "zod";
 import { prisma } from "@/lib/db/prisma";
+import { getDictionary } from "@/lib/i18n/dictionary";
+import { getLocale } from "@/lib/i18n/locale";
 import {
   getDefaultUser,
   listAccountsByName,
@@ -26,30 +28,41 @@ function redirectWithMessage(
   redirect(`${path}?${params.toString()}`);
 }
 
-function getErrorMessage(error: unknown) {
+function getErrorMessage(error: unknown, locale: Awaited<ReturnType<typeof getLocale>>) {
+  const t = getDictionary(locale);
+
   if (error instanceof ZodError) {
-    return error.issues[0]?.message ?? "Validation failed.";
+    return error.issues[0]?.message ?? t.actions.validationFailed;
   }
 
   if (
     error instanceof Prisma.PrismaClientKnownRequestError &&
     error.code === "P2002"
   ) {
-    return "An identical snapshot already exists.";
+    return t.actions.duplicateSnapshot;
   }
 
-  return "Unable to save snapshot.";
+  if (
+    error instanceof Error &&
+    error.message.startsWith(t.actions.unknownAccountPrefix)
+  ) {
+    return error.message;
+  }
+
+  return t.actions.unableToSave;
 }
 
 export async function createSnapshotAction(formData: FormData) {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const user = await getDefaultUser();
 
   if (!user) {
-    redirectWithMessage("/add-snapshot", "error", "Create a user before adding snapshots.");
+    redirectWithMessage("/add-snapshot", "error", t.actions.createUserBeforeAdd);
   }
 
   try {
-    const input = parseCreateSnapshotFormData(formData);
+    const input = parseCreateSnapshotFormData(formData, locale);
 
     await prisma.assetSnapshot.create({
       data: {
@@ -66,19 +79,21 @@ export async function createSnapshotAction(formData: FormData) {
       },
     });
   } catch (error) {
-    redirectWithMessage("/add-snapshot", "error", getErrorMessage(error));
+    redirectWithMessage("/add-snapshot", "error", getErrorMessage(error, locale));
   }
 
   revalidatePath("/snapshots");
   revalidatePath("/add-snapshot");
-  redirectWithMessage("/snapshots", "success", "Snapshot created.");
+  redirectWithMessage("/snapshots", "success", t.actions.snapshotCreated);
 }
 
 export async function updateSnapshotAction(formData: FormData) {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   let snapshotId = "";
 
   try {
-    const input = parseUpdateSnapshotFormData(formData);
+    const input = parseUpdateSnapshotFormData(formData, locale);
     snapshotId = input.id;
 
     await prisma.assetSnapshot.update({
@@ -97,18 +112,20 @@ export async function updateSnapshotAction(formData: FormData) {
     });
   } catch (error) {
     const path = snapshotId ? `/snapshots/${snapshotId}/edit` : "/snapshots";
-    redirectWithMessage(path, "error", getErrorMessage(error));
+    redirectWithMessage(path, "error", getErrorMessage(error, locale));
   }
 
   revalidatePath("/snapshots");
-  redirectWithMessage("/snapshots", "success", "Snapshot updated.");
+  redirectWithMessage("/snapshots", "success", t.actions.snapshotUpdated);
 }
 
 export async function deleteSnapshotAction(formData: FormData) {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const id = String(formData.get("id") ?? "");
 
   if (!id) {
-    redirectWithMessage("/snapshots", "error", "Snapshot id is missing.");
+    redirectWithMessage("/snapshots", "error", t.actions.missingSnapshotId);
   }
 
   try {
@@ -116,25 +133,27 @@ export async function deleteSnapshotAction(formData: FormData) {
       where: { id },
     });
   } catch {
-    redirectWithMessage("/snapshots", "error", "Unable to delete snapshot.");
+    redirectWithMessage("/snapshots", "error", t.actions.unableToDelete);
   }
 
   revalidatePath("/snapshots");
-  redirectWithMessage("/snapshots", "success", "Snapshot deleted.");
+  redirectWithMessage("/snapshots", "success", t.actions.snapshotDeleted);
 }
 
 export async function importSnapshotsCsvAction(formData: FormData) {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const user = await getDefaultUser();
 
   if (!user) {
-    redirectWithMessage("/import", "error", "Create a user before importing snapshots.");
+    redirectWithMessage("/import", "error", t.actions.createUserBeforeImport);
   }
 
   try {
-    const rows = parseImportSnapshotRowsFormData(formData);
+    const rows = parseImportSnapshotRowsFormData(formData, locale);
 
     if (rows.length === 0) {
-      redirectWithMessage("/import", "error", "No valid rows to import.");
+      redirectWithMessage("/import", "error", t.actions.noRowsToImport);
     }
 
     const accountsByName = await listAccountsByName();
@@ -144,7 +163,7 @@ export async function importSnapshotsCsvAction(formData: FormData) {
         const account = accountsByName.get(row.accountName);
 
         if (!account) {
-          throw new Error(`Unknown account: ${row.accountName}`);
+          throw new Error(`${t.actions.unknownAccountPrefix}${row.accountName}`);
         }
 
         return prisma.assetSnapshot.create({
@@ -164,10 +183,10 @@ export async function importSnapshotsCsvAction(formData: FormData) {
       }),
     );
   } catch (error) {
-    redirectWithMessage("/import", "error", getErrorMessage(error));
+    redirectWithMessage("/import", "error", getErrorMessage(error, locale));
   }
 
   revalidatePath("/snapshots");
   revalidatePath("/import");
-  redirectWithMessage("/snapshots", "success", "CSV import completed.");
+  redirectWithMessage("/snapshots", "success", t.actions.importCompleted);
 }
