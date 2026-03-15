@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum AccountType {
+  CMA
+  PENSION_SAVINGS
+  IRP
+  DC_PENSION
+}
+
+enum Market {
+  KR
+  US
+}
+
+enum AssetCategory {
+  STOCK
+  ETF
+  BOND
+  ELB
+  TDF
+}
+
+enum Currency {
+  KRW
+  USD
+}
+
+model User {
+  id        String          @id @default(cuid())
+  name      String
+  accounts  Account[]
+  snapshots AssetSnapshot[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model Account {
+  id          String          @id @default(cuid())
+  userId      String
+  name        String
+  accountType AccountType
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  snapshots   AssetSnapshot[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model AssetSnapshot {
+  id            String        @id @default(cuid())
+  userId        String
+  accountId     String
+  snapshotMonth String
+  market        Market
+  assetCategory AssetCategory
+  assetName     String
+  currency      Currency
+  amount        Decimal
+  returnRate    Decimal
+  memo          String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account       Account       @relation(fields: [accountId], references: [id], onDelete: Cascade)
+
+  @@index([snapshotMonth])
+  @@index([accountId, snapshotMonth])
+  @@unique([userId, accountId, snapshotMonth, assetName, assetCategory, currency])
+}
