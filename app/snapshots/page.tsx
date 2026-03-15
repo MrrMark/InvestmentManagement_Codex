@@ -50,6 +50,36 @@ export default async function SnapshotsPage({
     listAccounts().catch(() => []),
     listSnapshotMonths().catch(() => []),
   ]);
+  const exportParams = new URLSearchParams();
+
+  if (filters.snapshotMonth) {
+    exportParams.set("snapshotMonth", filters.snapshotMonth);
+  }
+
+  if (filters.account) {
+    exportParams.set("account", filters.account);
+  }
+
+  if (filters.market) {
+    exportParams.set("market", filters.market);
+  }
+
+  if (filters.assetCategory) {
+    exportParams.set("assetCategory", filters.assetCategory);
+  }
+
+  if (filters.currency) {
+    exportParams.set("currency", filters.currency);
+  }
+
+  if (filters.keyword) {
+    exportParams.set("keyword", filters.keyword);
+  }
+
+  const exportHref =
+    exportParams.size > 0
+      ? `/snapshots/export?${exportParams.toString()}`
+      : "/snapshots/export";
 
   return (
     <section className="space-y-6">
@@ -163,6 +193,12 @@ export default async function SnapshotsPage({
               >
                 {t.snapshots.filters.apply}
               </button>
+              <Link
+                href={exportHref}
+                className="rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700"
+              >
+                {t.snapshots.filters.exportCsv}
+              </Link>
               <Link
                 href="/snapshots"
                 className="rounded-full border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700"

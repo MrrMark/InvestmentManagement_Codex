@@ -60,6 +60,7 @@ type Dictionary = {
       keyword: string;
       keywordPlaceholder: string;
       apply: string;
+      exportCsv: string;
       reset: string;
     };
     table: {
@@ -240,6 +241,7 @@ const ko: Dictionary = {
       keyword: "키워드",
       keywordPlaceholder: "자산명",
       apply: "필터 적용",
+      exportCsv: "CSV 내보내기",
       reset: "초기화",
     },
     table: {
@@ -427,6 +429,7 @@ const en: Dictionary = {
       keyword: "Keyword",
       keywordPlaceholder: "Asset name",
       apply: "Apply Filters",
+      exportCsv: "Export CSV",
       reset: "Reset",
     },
     table: {
