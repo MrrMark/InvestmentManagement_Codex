@@ -2,7 +2,7 @@
 
 월별 자산 스냅샷을 기록하고 현재 포트폴리오 상태를 확인하기 위한 개인 투자 관리 앱입니다. 이 프로젝트는 거래 시스템이나 실시간 시세 연동 서비스가 아니라, 직접 입력한 월간 자산 데이터를 안정적으로 저장하고 비교하는 MVP에 초점을 맞춥니다.
 
-현재 구현은 대시보드, 스냅샷 CRUD, CSV import, 월간 비교, Docker 실행 검증까지 포함합니다. GitHub 방문자가 프로젝트 목적과 실행 방법을 빠르게 이해할 수 있도록, 아래 내용은 한글 설명을 먼저 제공하고 같은 내용을 영어로 이어서 제공합니다.
+현재 구현은 대시보드, 스냅샷 CRUD, CSV import/export, 월간 비교, Docker 실행 검증까지 포함합니다. GitHub 방문자가 프로젝트 목적과 실행 방법을 빠르게 이해할 수 있도록, 아래 내용은 한글 설명을 먼저 제공하고 같은 내용을 영어로 이어서 제공합니다.
 
 ## 프로젝트 개요
 
@@ -10,6 +10,7 @@
 - 선택한 월 기준으로 자산 합계와 배분 현황을 확인할 수 있습니다.
 - 이전 월과 비교해 증감 변화를 확인할 수 있습니다.
 - CSV 파일로 스냅샷을 일괄 등록할 수 있습니다.
+- 현재 필터 결과를 CSV로 내보낼 수 있습니다.
 - 수동 입력 기반 MVP이며, 실시간 시세/브로커 연동은 포함하지 않습니다.
 
 ## 핵심 기능
@@ -31,6 +32,8 @@
 - CSV import
   - 검증된 행만 업로드
   - 계좌명 기준으로 스냅샷 생성
+- CSV export
+  - 스냅샷 목록의 현재 필터 결과를 CSV로 다운로드
 - 월간 비교
   - 선택한 월과 가장 가까운 이전 월 비교
   - 총합/계좌/시장/자산군 단위 증감 확인
@@ -118,9 +121,11 @@ prisma migrate deploy -> prisma db seed -> next start
 curl http://localhost:3000/
 curl http://localhost:3000/snapshots
 curl http://localhost:3000/import
+curl -OJ "http://localhost:3000/snapshots/export?snapshotMonth=2026-03"
 ```
 
 `HOST_PORT=3001`로 실행했다면 같은 방식으로 `http://localhost:3001`을 사용하면 됩니다.
+내보내기 메뉴는 `/snapshots`의 필터 액션 영역에 있으며, 현재 필터 기준으로 CSV를 다운로드합니다.
 
 ### 종료 및 초기화
 
@@ -180,6 +185,7 @@ prisma/        스키마, 마이그레이션, 시드 데이터
 - 대시보드 집계
 - 월간 비교
 - CSV import
+- CSV export (현재 필터 결과 다운로드)
 - Docker 기반 실행 검증
 
 ## 현재 범위에 포함되지 않는 기능
@@ -205,7 +211,7 @@ prisma/        스키마, 마이그레이션, 시드 데이터
 
 InvestmentManagement_Codex is a personal investment management app for recording monthly asset snapshots and reviewing the current portfolio state. It is not a trading platform or a real-time market integration product. The current MVP focuses on storing manually entered monthly asset data and comparing changes over time.
 
-The current implementation includes a dashboard, snapshot CRUD, CSV import, month-over-month comparison, and Docker-based runtime validation. The Korean documentation above is the primary version, and the following English section mirrors the same scope in the same order.
+The current implementation includes a dashboard, snapshot CRUD, CSV import/export, month-over-month comparison, and Docker-based runtime validation. The Korean documentation above is the primary version, and the following English section mirrors the same scope in the same order.
 
 ## Overview
 
@@ -213,6 +219,7 @@ The current implementation includes a dashboard, snapshot CRUD, CSV import, mont
 - Review totals and allocation for a selected month.
 - Compare the selected month with the closest previous month.
 - Import snapshot rows from CSV.
+- Export the current filtered snapshot rows to CSV.
 - Stay focused on a manual snapshot workflow instead of real-time brokerage sync.
 
 ## Core Features
@@ -234,6 +241,8 @@ The current implementation includes a dashboard, snapshot CRUD, CSV import, mont
 - CSV import
   - Import only validated rows
   - Create snapshots by matching account names
+- CSV export
+  - Download CSV from the current snapshot list filters
 - Month-over-month comparison
   - Compare the selected month with the closest earlier month
   - Review deltas by total, account, market, and category
@@ -321,9 +330,11 @@ prisma migrate deploy -> prisma db seed -> next start
 curl http://localhost:3000/
 curl http://localhost:3000/snapshots
 curl http://localhost:3000/import
+curl -OJ "http://localhost:3000/snapshots/export?snapshotMonth=2026-03"
 ```
 
 If you started the app with `HOST_PORT=3001`, use `http://localhost:3001` for the same checks.
+The export menu is in the `/snapshots` filter action area and downloads CSV for the current filter context.
 
 ### Stop and reset
 
@@ -383,6 +394,7 @@ The current codebase includes:
 - Dashboard aggregations
 - Month-over-month comparison
 - CSV import
+- CSV export (current filtered rows)
 - Docker-based runtime validation
 
 ## Out of Scope
