@@ -2,19 +2,12 @@
 
 import type { ChangeEvent } from "react";
 import { useState } from "react";
-import { parseCsvText } from "@investment/domain/csv";
 import {
-  importSnapshotCsvRowSchema,
-  type ImportSnapshotCsvRowInput,
-} from "@investment/domain/snapshot";
+  buildSnapshotCsvImportPreview,
+  type SnapshotCsvImportPreviewRow,
+} from "@investment/domain/csv";
+import type { ImportSnapshotCsvRowInput } from "@investment/domain/snapshot";
 import type { Locale } from "@/lib/i18n/locale";
-
-type CsvPreviewRow = {
-  rowNumber: number;
-  raw: Record<string, string>;
-  parsed: ImportSnapshotCsvRowInput | null;
-  errors: string[];
-};
 
 type CsvImportFormLabels = {
   fileLabel: string;
@@ -58,7 +51,8 @@ export function CsvImportForm({
   action,
   labels,
 }: CsvImportFormProps) {
-  const [previewRows, setPreviewRows] = useState<CsvPreviewRow[]>([]);
+  const [previewRows, setPreviewRows] = useState<SnapshotCsvImportPreviewRow[]>([]);
+  const [validRows, setValidRows] = useState<ImportSnapshotCsvRowInput[]>([]);
   const [parseMessage, setParseMessage] = useState("");
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
@@ -66,53 +60,36 @@ export function CsvImportForm({
 
     if (!file) {
       setPreviewRows([]);
+      setValidRows([]);
       setParseMessage("");
       return;
     }
 
     const text = await file.text();
-    const rows = parseCsvText(text);
+    const preview = buildSnapshotCsvImportPreview({
+      text,
+      locale,
+      accountNames,
+      unknownAccountPrefix: `${labels.unknownAccount}: `,
+    });
 
-    if (rows.length === 0) {
+    if (preview.rows.length === 0) {
       setPreviewRows([]);
+      setValidRows([]);
       setParseMessage(labels.csvEmpty);
       return;
     }
 
-    const schema = importSnapshotCsvRowSchema(locale);
-    const nextPreviewRows = rows.map((row, index) => {
-      const parsedResult = schema.safeParse(row);
-      const errors: string[] = [];
-
-      if (!parsedResult.success) {
-        errors.push(
-          ...parsedResult.error.issues.map((issue) => issue.message),
-        );
-      } else if (!accountNames.includes(parsedResult.data.accountName)) {
-        errors.push(`${labels.unknownAccount}: ${parsedResult.data.accountName}`);
-      }
-
-      return {
-        rowNumber: index + 2,
-        raw: row,
-        parsed: parsedResult.success && errors.length === 0 ? parsedResult.data : null,
-        errors,
-      };
-    });
-
-    setPreviewRows(nextPreviewRows);
+    setPreviewRows(preview.rows);
+    setValidRows(preview.validRows);
     setParseMessage(
       formatParseSummary(
         labels.parseSummary,
-        nextPreviewRows.filter((row) => row.parsed).length,
-        nextPreviewRows.length,
+        preview.validRows.length,
+        preview.rows.length,
       ),
     );
   }
-
-  const validRows = previewRows
-    .filter((row) => row.parsed)
-    .map((row) => row.parsed) as ImportSnapshotCsvRowInput[];
 
   return (
     <div className="space-y-6">

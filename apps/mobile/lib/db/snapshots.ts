@@ -152,6 +152,57 @@ export async function createSnapshot(input: CreateSnapshotInput) {
   );
 }
 
+export async function importSnapshots(inputs: readonly CreateSnapshotInput[]) {
+  const db = await getMobileDb();
+  const now = new Date().toISOString();
+  let createdCount = 0;
+  let skippedDuplicateCount = 0;
+
+  await db.withTransactionAsync(async () => {
+    for (const input of inputs) {
+      const result = await db.runAsync(
+        `INSERT OR IGNORE INTO asset_snapshots (
+          id,
+          user_id,
+          account_id,
+          snapshot_month,
+          market,
+          asset_category,
+          asset_name,
+          currency,
+          amount_text,
+          return_rate_text,
+          memo,
+          created_at,
+          updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        createId(),
+        localUserId,
+        input.accountId,
+        input.snapshotMonth,
+        input.market,
+        input.assetCategory,
+        input.assetName,
+        input.currency,
+        String(input.amount),
+        input.returnRate.toFixed(2),
+        input.memo || null,
+        now,
+        now,
+      );
+
+      if (result.changes > 0) {
+        createdCount += 1;
+      } else {
+        skippedDuplicateCount += 1;
+      }
+    }
+  });
+
+  return { createdCount, skippedDuplicateCount };
+}
+
 export async function updateSnapshot(input: UpdateSnapshotInput) {
   const db = await getMobileDb();
   const now = new Date().toISOString();

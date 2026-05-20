@@ -1,13 +1,14 @@
 import { useRouter } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { CsvImportPanel } from '@/components/csv-import-panel';
 import { getInitialSnapshotFormValues, SnapshotForm } from '@/components/snapshot-form';
-import { createSnapshot } from '@/lib/db/snapshots';
 import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
+import { createSnapshot } from '@/lib/db/snapshots';
 
 export default function AddSnapshotScreen() {
   const router = useRouter();
-  const { accounts, error } = useMobileSnapshots();
+  const { accounts, error, reload } = useMobileSnapshots();
 
   async function handleSubmit(payload: Parameters<typeof createSnapshot>[0]) {
     await createSnapshot(payload);
@@ -27,6 +28,11 @@ export default function AddSnapshotScreen() {
         initialValues={getInitialSnapshotFormValues()}
         submitLabel="스냅샷 저장"
         onSubmit={handleSubmit}
+      />
+
+      <CsvImportPanel
+        accounts={accounts}
+        onImported={reload}
       />
     </ScrollView>
   );
