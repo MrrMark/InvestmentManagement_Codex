@@ -6,7 +6,7 @@ import {
   type AggregationSnapshot,
   type CurrencyTotal,
   type GroupedCurrencyTotal,
-} from "@/lib/domain/aggregation";
+} from "./aggregation";
 
 export type CurrencyDelta = {
   currency: string;

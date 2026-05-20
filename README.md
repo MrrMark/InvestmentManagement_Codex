@@ -166,14 +166,15 @@ userId + accountId + snapshotMonth + assetName + assetCategory + currency
 app/           화면과 라우트, 서버 액션
 components/    공통 UI 컴포넌트
 lib/db/        Prisma 조회와 폼 데이터 파싱
-lib/domain/    집계, 비교, 필터, CSV, 검증 로직
+packages/domain/
+               집계, 비교, 필터, CSV, 검증 로직
 prisma/        스키마, 마이그레이션, 시드 데이터
 ```
 
 구조상 중요한 원칙은 DB 접근과 계산 로직을 분리하는 것입니다.
 
 - `lib/db/`는 Prisma를 통해 데이터를 읽고 저장합니다.
-- `lib/domain/`은 집계/비교/필터링 같은 순수 로직을 담당합니다.
+- `packages/domain/`은 웹과 모바일에서 공유할 집계/비교/필터링 같은 순수 로직을 담당합니다.
 
 ## 현재 구현 범위
 
@@ -375,14 +376,15 @@ userId + accountId + snapshotMonth + assetName + assetCategory + currency
 app/           routes, pages, and server actions
 components/    shared UI components
 lib/db/        Prisma queries and form parsing
-lib/domain/    aggregation, comparison, filter, CSV, and validation logic
+packages/domain/
+               aggregation, comparison, filter, CSV, and validation logic
 prisma/        schema, migrations, and seed data
 ```
 
 One of the key architectural choices is separating persistence from calculation logic.
 
 - `lib/db/` handles data access and persistence with Prisma.
-- `lib/domain/` contains pure logic for aggregation, comparison, filtering, and validation.
+- `packages/domain/` contains pure logic for aggregation, comparison, filtering, and validation that can be shared by web and mobile apps.
 
 ## Current Scope
 

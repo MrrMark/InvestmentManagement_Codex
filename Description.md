@@ -170,7 +170,7 @@
 
 ### test 실행 방식
 - 샌드박스 환경의 IPC 제약을 피하기 위해 test script를
-  `node --import tsx --test lib/domain/*.test.ts` 형태로 정리
+  `node --import tsx --test packages/domain/src/*.test.ts` 형태로 정리
 
 ---
 
@@ -195,4 +195,3 @@
 - MVP 핵심 흐름(입력/조회/수정/삭제/집계/비교/CSV import)이 코드상 연결되어 있음
 - build/test/DB schema 상태 모두 정상
 - 실제 브라우저 상호작용 기준으로는 CSV preview 같은 UI 인터랙션 항목만 최종 수동 점검하면 안정적으로 마무리 가능
-

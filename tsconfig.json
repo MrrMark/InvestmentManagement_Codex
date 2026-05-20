@@ -19,6 +19,8 @@
       }
     ],
     "paths": {
+      "@investment/domain": ["./packages/domain/src/index.ts"],
+      "@investment/domain/*": ["./packages/domain/src/*"],
       "@/*": ["./*"]
     }
   },

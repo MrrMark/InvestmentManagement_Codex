@@ -1,4 +1,4 @@
-import { assetCategories, currencies, markets } from "@/lib/domain/snapshot";
+import { assetCategories, currencies, markets } from "./snapshot";
 
 export type SnapshotListFilters = {
   snapshotMonth?: string;

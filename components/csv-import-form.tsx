@@ -2,11 +2,11 @@
 
 import type { ChangeEvent } from "react";
 import { useState } from "react";
-import { parseCsvText } from "@/lib/domain/csv";
+import { parseCsvText } from "@investment/domain/csv";
 import {
   importSnapshotCsvRowSchema,
   type ImportSnapshotCsvRowInput,
-} from "@/lib/domain/snapshot";
+} from "@investment/domain/snapshot";
 import type { Locale } from "@/lib/i18n/locale";
 
 type CsvPreviewRow = {

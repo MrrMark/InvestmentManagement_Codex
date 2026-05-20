@@ -5,7 +5,7 @@ import {
 } from "@/lib/db/snapshots";
 import { PageHeader } from "@/components/page-header";
 import { SectionCard } from "@/components/section-card";
-import { compareMonthOverMonth } from "@/lib/domain/comparison";
+import { compareMonthOverMonth } from "@investment/domain/comparison";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { getLocale } from "@/lib/i18n/locale";
 

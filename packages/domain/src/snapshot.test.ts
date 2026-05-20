@@ -4,7 +4,7 @@ import {
   createSnapshotSchema,
   importSnapshotCsvRowSchema,
   updateSnapshotSchema,
-} from "@/lib/domain/snapshot";
+} from "@investment/domain/snapshot";
 
 test("createSnapshotSchema parses valid snapshot input", () => {
   const result = createSnapshotSchema("en").parse({

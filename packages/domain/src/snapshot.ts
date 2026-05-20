@@ -1,6 +1,39 @@
 import { z } from "zod";
-import { getDictionary } from "@/lib/i18n/dictionary";
-import type { Locale } from "@/lib/i18n/locale";
+
+export const locales = ["ko", "en"] as const;
+export type Locale = (typeof locales)[number];
+
+export type SnapshotValidationMessages = {
+  useYYYYMM: string;
+  returnRateNumeric: string;
+  returnRatePrecision: string;
+  accountRequired: string;
+  assetNameRequired: string;
+  amountNonNegative: string;
+};
+
+const snapshotValidationMessages: Record<Locale, SnapshotValidationMessages> = {
+  ko: {
+    useYYYYMM: "YYYY-MM 형식으로 입력하세요.",
+    returnRateNumeric: "수익률은 숫자여야 합니다.",
+    returnRatePrecision: "수익률은 소수점 둘째 자리까지 입력할 수 있습니다.",
+    accountRequired: "계좌는 필수 입력값입니다.",
+    assetNameRequired: "자산명은 필수 입력값입니다.",
+    amountNonNegative: "금액은 0 이상이어야 합니다.",
+  },
+  en: {
+    useYYYYMM: "Use YYYY-MM format.",
+    returnRateNumeric: "Return rate must be numeric.",
+    returnRatePrecision: "Return rate must use up to 2 decimal places.",
+    accountRequired: "Account is required.",
+    assetNameRequired: "Asset name is required.",
+    amountNonNegative: "Amount must be non-negative.",
+  },
+};
+
+export function getSnapshotValidationMessages(locale: Locale) {
+  return snapshotValidationMessages[locale];
+}
 
 export const accountTypes = [
   "CMA",
@@ -26,12 +59,12 @@ function hasTwoDecimalPrecision(value: number) {
 }
 
 export function createSnapshotSchema(locale: Locale) {
-  const t = getDictionary(locale);
+  const validation = getSnapshotValidationMessages(locale);
 
   return z.object({
     snapshotMonth: z
       .string()
-      .regex(/^\d{4}-\d{2}$/, t.validation.useYYYYMM),
+      .regex(/^\d{4}-\d{2}$/, validation.useYYYYMM),
     accountId: z.string().min(1),
     market: z.enum(markets),
     assetCategory: z.enum(assetCategories),
@@ -41,10 +74,10 @@ export function createSnapshotSchema(locale: Locale) {
     returnRate: z.coerce
       .number()
       .refine((value) => Number.isFinite(value), {
-        message: t.validation.returnRateNumeric,
+        message: validation.returnRateNumeric,
       })
       .refine(hasTwoDecimalPrecision, {
-        message: t.validation.returnRatePrecision,
+        message: validation.returnRatePrecision,
       }),
     memo: z.string().trim().max(200).optional().or(z.literal("")),
   });
@@ -57,34 +90,34 @@ export function updateSnapshotSchema(locale: Locale) {
 }
 
 export function importSnapshotCsvRowSchema(locale: Locale) {
-  const t = getDictionary(locale);
+  const validation = getSnapshotValidationMessages(locale);
 
   return z.object({
     userName: z.string().trim().optional().or(z.literal("")),
     accountName: z
       .string()
       .trim()
-      .min(1, t.validation.accountRequired),
+      .min(1, validation.accountRequired),
     snapshotMonth: z
       .string()
-      .regex(/^\d{4}-\d{2}$/, t.validation.useYYYYMM),
+      .regex(/^\d{4}-\d{2}$/, validation.useYYYYMM),
     market: z.enum(markets),
     assetCategory: z.enum(assetCategories),
     assetName: z
       .string()
       .trim()
-      .min(1, t.validation.assetNameRequired),
+      .min(1, validation.assetNameRequired),
     currency: z.enum(currencies),
     amount: z.coerce
       .number()
-      .nonnegative(t.validation.amountNonNegative),
+      .nonnegative(validation.amountNonNegative),
     returnRate: z.coerce
       .number()
       .refine((value) => Number.isFinite(value), {
-        message: t.validation.returnRateNumeric,
+        message: validation.returnRateNumeric,
       })
       .refine(hasTwoDecimalPrecision, {
-        message: t.validation.returnRatePrecision,
+        message: validation.returnRatePrecision,
       }),
     memo: z.string().trim().max(200).optional().or(z.literal("")),
   });
