@@ -29,7 +29,8 @@ iPhone/iPad용 월간 자산 스냅샷 앱입니다. 현재 단계는 Expo Route
 - `@investment/domain` 공유 로직 import 검증
 - `expo-sqlite` 기반 로컬 migration/seed
 - 스냅샷 목록, 집계, 비교 데이터 조회
-- 스냅샷 추가 저장
+- 스냅샷 생성, 수정, 삭제
+- 월 선택과 스냅샷 목록 필터
 
 ## Stack
 
