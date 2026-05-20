@@ -1,3 +1,9 @@
+import {
+  importSnapshotCsvRowSchema,
+  type ImportSnapshotCsvRowInput,
+  type Locale,
+} from "./snapshot";
+
 export type ParsedCsvRow = Record<string, string>;
 
 export type SnapshotCsvRow = {
@@ -23,6 +29,18 @@ export const snapshotCsvHeaders = [
   "returnRate",
   "memo",
 ] as const;
+
+export type SnapshotCsvImportPreviewRow = {
+  rowNumber: number;
+  raw: ParsedCsvRow;
+  parsed: ImportSnapshotCsvRowInput | null;
+  errors: string[];
+};
+
+export type SnapshotCsvImportPreview = {
+  rows: SnapshotCsvImportPreviewRow[];
+  validRows: ImportSnapshotCsvRowInput[];
+};
 
 function parseCsvLine(line: string) {
   const values: string[] = [];
@@ -152,4 +170,48 @@ export function serializeSnapshotCsvRows(rows: readonly SnapshotCsvRow[]) {
   }
 
   return lines.join("\n");
+}
+
+function hasParsedImportRow(
+  row: SnapshotCsvImportPreviewRow,
+): row is SnapshotCsvImportPreviewRow & { parsed: ImportSnapshotCsvRowInput } {
+  return row.parsed !== null;
+}
+
+export function buildSnapshotCsvImportPreview({
+  text,
+  locale,
+  accountNames,
+  unknownAccountPrefix,
+}: {
+  text: string;
+  locale: Locale;
+  accountNames: readonly string[];
+  unknownAccountPrefix: string;
+}): SnapshotCsvImportPreview {
+  const rows = parseCsvText(text);
+  const accountNameSet = new Set(accountNames);
+  const schema = importSnapshotCsvRowSchema(locale);
+  const previewRows = rows.map((row, index) => {
+    const parsedResult = schema.safeParse(row);
+    const errors: string[] = [];
+
+    if (!parsedResult.success) {
+      errors.push(...parsedResult.error.issues.map((issue) => issue.message));
+    } else if (!accountNameSet.has(parsedResult.data.accountName)) {
+      errors.push(`${unknownAccountPrefix}${parsedResult.data.accountName}`);
+    }
+
+    return {
+      rowNumber: index + 2,
+      raw: row,
+      parsed: parsedResult.success && errors.length === 0 ? parsedResult.data : null,
+      errors,
+    };
+  });
+
+  return {
+    rows: previewRows,
+    validRows: previewRows.filter(hasParsedImportRow).map((row) => row.parsed),
+  };
 }
