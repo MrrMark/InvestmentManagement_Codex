@@ -1,0 +1,70 @@
+import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+
+export function MonthSelector({
+  months,
+  selectedMonth,
+  onSelectMonth,
+}: {
+  months: string[];
+  selectedMonth: string;
+  onSelectMonth: (month: string) => void;
+}) {
+  if (months.length === 0) {
+    return <Text style={styles.empty}>선택할 스냅샷 월이 없습니다.</Text>;
+  }
+
+  return (
+    <ScrollView
+      horizontal
+      contentContainerStyle={styles.container}
+      showsHorizontalScrollIndicator={false}>
+      {months.map((month) => {
+        const isSelected = month === selectedMonth;
+
+        return (
+          <Pressable
+            key={month}
+            accessibilityRole="button"
+            accessibilityState={{ selected: isSelected }}
+            style={[styles.chip, isSelected && styles.selectedChip]}
+            onPress={() => onSelectMonth(month)}>
+            <Text style={[styles.chipText, isSelected && styles.selectedChipText]}>{month}</Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    gap: 8,
+    paddingVertical: 4,
+  },
+  chip: {
+    minWidth: 78,
+    alignItems: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#C9D3DA',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+    paddingVertical: 9,
+  },
+  selectedChip: {
+    borderColor: '#174A7C',
+    backgroundColor: '#174A7C',
+  },
+  chipText: {
+    color: '#43515A',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  selectedChipText: {
+    color: '#FFFFFF',
+  },
+  empty: {
+    color: '#64727C',
+    fontSize: 14,
+  },
+});

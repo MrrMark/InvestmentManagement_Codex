@@ -1,18 +1,48 @@
 import { getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import { normalizeSnapshotListFilters } from '@investment/domain/snapshot-filters';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useMemo, useState } from 'react';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import { EmptyState } from '@/components/empty-state';
+import { MonthSelector } from '@/components/month-selector';
 import { formatAmount } from '@/data/seed-data';
 import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
+import { useSelectedMonth } from '@/hooks/use-selected-month';
+import { deleteSnapshot } from '@/lib/db/snapshots';
 
 export default function SnapshotsScreen() {
-  const { snapshots, isLoading, error } = useMobileSnapshots();
-  const selectedMonth = getAvailableSnapshotMonths(snapshots)[0];
+  const { snapshots, isLoading, error, reload } = useMobileSnapshots();
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const months = useMemo(() => getAvailableSnapshotMonths(snapshots), [snapshots]);
+  const [selectedMonth, setSelectedMonth] = useSelectedMonth(months, months[0] ?? '');
   const filters = normalizeSnapshotListFilters({ snapshotMonth: selectedMonth });
 
   const visibleSnapshots = snapshots
     .filter((snapshot) => snapshot.snapshotMonth === filters.snapshotMonth)
     .sort((a, b) => Number(b.amount) - Number(a.amount));
+
+  function requestDelete(id: string, assetName: string) {
+    Alert.alert('스냅샷 삭제', `${assetName} 스냅샷을 삭제할까요?`, [
+      { text: '취소', style: 'cancel' },
+      {
+        text: '삭제',
+        style: 'destructive',
+        onPress: () => {
+          void handleDelete(id);
+        },
+      },
+    ]);
+  }
+
+  async function handleDelete(id: string) {
+    try {
+      await deleteSnapshot(id);
+      setActionMessage('스냅샷이 삭제되었습니다.');
+      await reload();
+    } catch (caughtError) {
+      setActionMessage(caughtError instanceof Error ? caughtError.message : '삭제에 실패했습니다.');
+    }
+  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -20,12 +50,22 @@ export default function SnapshotsScreen() {
         <Text style={styles.eyebrow}>{isLoading ? '불러오는 중' : selectedMonth}</Text>
         <Text style={styles.title}>스냅샷 목록</Text>
         {error ? <Text style={styles.error}>{error}</Text> : null}
+        {actionMessage ? <Text style={styles.message}>{actionMessage}</Text> : null}
       </View>
 
+      <MonthSelector
+        months={months}
+        selectedMonth={selectedMonth}
+        onSelectMonth={setSelectedMonth}
+      />
+
       <View style={styles.list}>
+        {visibleSnapshots.length === 0 ? (
+          <EmptyState message="선택한 월에 등록된 스냅샷이 없습니다." />
+        ) : null}
         {visibleSnapshots.map((snapshot) => (
           <View
-            key={`${snapshot.accountName}-${snapshot.assetName}-${snapshot.currency}`}
+            key={snapshot.id}
             style={styles.row}>
             <View style={styles.rowMain}>
               <Text style={styles.assetName}>{snapshot.assetName}</Text>
@@ -36,6 +76,12 @@ export default function SnapshotsScreen() {
             <Text style={styles.amount}>
               {formatAmount(Number(snapshot.amount), snapshot.currency)}
             </Text>
+            <Pressable
+              accessibilityRole="button"
+              style={styles.deleteButton}
+              onPress={() => requestDelete(snapshot.id, snapshot.assetName)}>
+              <Text style={styles.deleteText}>삭제</Text>
+            </Pressable>
           </View>
         ))}
       </View>
@@ -65,6 +111,11 @@ const styles = StyleSheet.create({
   },
   error: {
     color: '#B42318',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  message: {
+    color: '#174A7C',
     fontSize: 14,
     fontWeight: '700',
   },
@@ -100,5 +151,17 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     textAlign: 'right',
+  },
+  deleteButton: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#F3B9B3',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  deleteText: {
+    color: '#B42318',
+    fontSize: 13,
+    fontWeight: '800',
   },
 });

@@ -7,16 +7,21 @@ import {
 } from '@investment/domain/aggregation';
 import { getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import type { ReactNode } from 'react';
+import { useMemo } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
+import { EmptyState } from '@/components/empty-state';
+import { MonthSelector } from '@/components/month-selector';
 import { defaultSnapshotMonth, formatAmount } from '@/data/seed-data';
 import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
+import { useSelectedMonth } from '@/hooks/use-selected-month';
 
 export default function HomeScreen() {
   const { width } = useWindowDimensions();
   const { snapshots, isLoading, error } = useMobileSnapshots();
   const isWide = width >= 760;
-  const selectedMonth = getAvailableSnapshotMonths(snapshots)[0] ?? defaultSnapshotMonth;
+  const months = useMemo(() => getAvailableSnapshotMonths(snapshots), [snapshots]);
+  const [selectedMonth, setSelectedMonth] = useSelectedMonth(months, defaultSnapshotMonth);
   const totalAssets = getTotalAssetsByCurrency(snapshots, selectedMonth);
   const byAccount = getAssetsByAccount(snapshots, selectedMonth);
   const byMarket = getAssetsByMarket(snapshots, selectedMonth);
@@ -31,24 +36,38 @@ export default function HomeScreen() {
         {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>
 
+      <MonthSelector
+        months={months}
+        selectedMonth={selectedMonth}
+        onSelectMonth={setSelectedMonth}
+      />
+
       <View style={[styles.grid, isWide && styles.gridWide]}>
         <Section title="총 자산">
-          {totalAssets.map((item) => (
-            <MetricRow
-              key={item.currency}
-              label={item.currency}
-              value={formatAmount(item.totalAmount, item.currency)}
-            />
-          ))}
+          {totalAssets.length === 0 ? (
+            <EmptyState message="선택한 월에 등록된 스냅샷이 없습니다." />
+          ) : (
+            totalAssets.map((item) => (
+              <MetricRow
+                key={item.currency}
+                label={item.currency}
+                value={formatAmount(item.totalAmount, item.currency)}
+              />
+            ))
+          )}
         </Section>
         <Section title="상위 자산">
-          {topAssets.map((item) => (
-            <MetricRow
-              key={`${item.assetName}-${item.currency}`}
-              label={item.assetName}
-              value={formatAmount(item.totalAmount, item.currency)}
-            />
-          ))}
+          {topAssets.length === 0 ? (
+            <EmptyState message="상위 자산을 표시할 데이터가 없습니다." />
+          ) : (
+            topAssets.map((item) => (
+              <MetricRow
+                key={`${item.assetName}-${item.currency}`}
+                label={item.assetName}
+                value={formatAmount(item.totalAmount, item.currency)}
+              />
+            ))
+          )}
         </Section>
         <Breakdown title="계좌별" groups={byAccount} />
         <Breakdown title="시장별" groups={byMarket} />
@@ -76,14 +95,18 @@ function Breakdown({
 }) {
   return (
     <Section title={title}>
-      {groups.map((group) =>
-        group.totals.map((total) => (
-          <MetricRow
-            key={`${group.label}-${total.currency}`}
-            label={group.label}
-            value={formatAmount(total.totalAmount, total.currency)}
-          />
-        )),
+      {groups.length === 0 ? (
+        <EmptyState message="표시할 배분 데이터가 없습니다." />
+      ) : (
+        groups.map((group) =>
+          group.totals.map((total) => (
+            <MetricRow
+              key={`${group.label}-${total.currency}`}
+              label={group.label}
+              value={formatAmount(total.totalAmount, total.currency)}
+            />
+          )),
+        )
       )}
     </Section>
   );
