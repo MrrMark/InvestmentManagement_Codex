@@ -10,12 +10,14 @@ import { MonthSelector } from '@/components/month-selector';
 import { formatAmount } from '@/data/seed-data';
 import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
+import { exportSnapshotsToCsv } from '@/lib/csv/export-snapshots';
 import { deleteSnapshot } from '@/lib/db/snapshots';
 
 export default function SnapshotsScreen() {
   const router = useRouter();
   const { accounts, snapshots, isLoading, error, reload } = useMobileSnapshots();
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const [accountFilter, setAccountFilter] = useState('');
   const [marketFilter, setMarketFilter] = useState('');
   const [assetCategoryFilter, setAssetCategoryFilter] = useState('');
@@ -75,6 +77,22 @@ export default function SnapshotsScreen() {
     }
   }
 
+  async function handleExport() {
+    setIsExporting(true);
+    setActionMessage(null);
+
+    try {
+      const fileName = await exportSnapshotsToCsv(visibleSnapshots);
+      setActionMessage(`${fileName} 내보내기를 준비했습니다.`);
+    } catch (caughtError) {
+      setActionMessage(
+        caughtError instanceof Error ? caughtError.message : 'CSV 내보내기에 실패했습니다.',
+      );
+    } finally {
+      setIsExporting(false);
+    }
+  }
+
   function resetFilters() {
     setAccountFilter('');
     setMarketFilter('');
@@ -101,14 +119,26 @@ export default function SnapshotsScreen() {
       <View style={styles.filters}>
         <View style={styles.filterHeader}>
           <Text style={styles.filterTitle}>필터</Text>
-          {hasActiveFilters ? (
+          <View style={styles.filterActions}>
+            {hasActiveFilters ? (
+              <Pressable
+                accessibilityRole="button"
+                style={styles.resetButton}
+                onPress={resetFilters}>
+                <Text style={styles.resetText}>초기화</Text>
+              </Pressable>
+            ) : null}
             <Pressable
               accessibilityRole="button"
-              style={styles.resetButton}
-              onPress={resetFilters}>
-              <Text style={styles.resetText}>초기화</Text>
+              disabled={visibleSnapshots.length === 0 || isExporting}
+              style={[
+                styles.exportButton,
+                (visibleSnapshots.length === 0 || isExporting) && styles.disabledExportButton,
+              ]}
+              onPress={handleExport}>
+              <Text style={styles.exportText}>{isExporting ? '준비 중' : 'CSV'}</Text>
             </Pressable>
-          ) : null}
+          </View>
         </View>
         <FilterChipGroup
           label="계좌"
@@ -297,6 +327,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '800',
   },
+  filterActions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   resetButton: {
     borderRadius: 8,
     borderWidth: 1,
@@ -306,6 +340,22 @@ const styles = StyleSheet.create({
   },
   resetText: {
     color: '#43515A',
+    fontSize: 13,
+    fontWeight: '800',
+  },
+  exportButton: {
+    minWidth: 58,
+    alignItems: 'center',
+    borderRadius: 8,
+    backgroundColor: '#174A7C',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  disabledExportButton: {
+    backgroundColor: '#8495A1',
+  },
+  exportText: {
+    color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
   },
