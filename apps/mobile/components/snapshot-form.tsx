@@ -6,13 +6,17 @@ import {
   type CreateSnapshotInput,
 } from '@investment/domain/snapshot';
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { MobileAccount, MobileSnapshot } from '@/lib/db/snapshots';
 
 export type SnapshotFormValues = {
   snapshotMonth: string;
+  accountId: string;
+  market: (typeof markets)[number];
+  assetCategory: (typeof assetCategories)[number];
   assetName: string;
+  currency: (typeof currencies)[number];
   amount: string;
   returnRate: string;
   memo: string;
@@ -25,7 +29,11 @@ export type SnapshotFormSubmitPayload = CreateSnapshotInput & {
 export function getInitialSnapshotFormValues(snapshot?: MobileSnapshot | null): SnapshotFormValues {
   return {
     snapshotMonth: snapshot?.snapshotMonth ?? '2026-04',
+    accountId: snapshot?.accountId ?? '',
+    market: getOptionValue(markets, snapshot?.market, markets[0]),
+    assetCategory: getOptionValue(assetCategories, snapshot?.assetCategory, assetCategories[1]),
     assetName: snapshot?.assetName ?? '',
+    currency: getOptionValue(currencies, snapshot?.currency, currencies[0]),
     amount: snapshot ? String(snapshot.amount) : '',
     returnRate: snapshot?.returnRate.toFixed(2) ?? '0.00',
     memo: snapshot?.memo ?? '',
@@ -48,25 +56,24 @@ export function SnapshotForm({
   const [form, setForm] = useState(initialValues);
   const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const selectedAccountId = form.accountId || accounts[0]?.id || '';
 
-  function updateField(field: keyof SnapshotFormValues, value: string) {
+  function updateField<FieldName extends keyof SnapshotFormValues>(
+    field: FieldName,
+    value: SnapshotFormValues[FieldName],
+  ) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
   async function submitForm() {
-    const firstAccount = accounts[0];
-
-    if (!firstAccount) {
+    if (!selectedAccountId) {
       setMessage('저장할 계좌가 없습니다.');
       return;
     }
 
     const result = createSnapshotSchema('ko').safeParse({
       ...form,
-      accountId: firstAccount.id,
-      market: markets[0],
-      assetCategory: assetCategories[1],
-      currency: currencies[0],
+      accountId: selectedAccountId,
     });
 
     if (!result.success) {
@@ -94,11 +101,40 @@ export function SnapshotForm({
         onChangeText={(value) => updateField('snapshotMonth', value)}
         placeholder="YYYY-MM"
       />
+      {accounts.length > 0 ? (
+        <OptionSelector
+          label="계좌"
+          options={accounts.map((account) => account.id)}
+          selectedValue={selectedAccountId}
+          onSelect={(value) => updateField('accountId', value)}
+          getLabel={(value) => accounts.find((account) => account.id === value)?.name ?? value}
+        />
+      ) : (
+        <Text style={styles.message}>저장할 계좌가 없습니다.</Text>
+      )}
+      <OptionSelector
+        label="시장"
+        options={markets}
+        selectedValue={form.market}
+        onSelect={(value) => updateField('market', value)}
+      />
+      <OptionSelector
+        label="자산 분류"
+        options={assetCategories}
+        selectedValue={form.assetCategory}
+        onSelect={(value) => updateField('assetCategory', value)}
+      />
       <Field
         label="자산명"
         value={form.assetName}
         onChangeText={(value) => updateField('assetName', value)}
         placeholder="예: KODEX 200"
+      />
+      <OptionSelector
+        label="통화"
+        options={currencies}
+        selectedValue={form.currency}
+        onSelect={(value) => updateField('currency', value)}
       />
       <Field
         label="금액"
@@ -130,6 +166,55 @@ export function SnapshotForm({
         onPress={submitForm}>
         <Text style={styles.buttonText}>{isSubmitting ? '저장 중' : submitLabel}</Text>
       </Pressable>
+    </View>
+  );
+}
+
+function getOptionValue<OptionValue extends string>(
+  options: readonly OptionValue[],
+  value: string | undefined,
+  fallback: OptionValue,
+) {
+  return value && options.some((option) => option === value) ? (value as OptionValue) : fallback;
+}
+
+function OptionSelector<OptionValue extends string>({
+  label,
+  options,
+  selectedValue,
+  onSelect,
+  getLabel = (value) => value,
+}: {
+  label: string;
+  options: readonly OptionValue[];
+  selectedValue: OptionValue;
+  onSelect: (value: OptionValue) => void;
+  getLabel?: (value: OptionValue) => string;
+}) {
+  return (
+    <View style={styles.field}>
+      <Text style={styles.label}>{label}</Text>
+      <ScrollView
+        horizontal
+        contentContainerStyle={styles.optionList}
+        showsHorizontalScrollIndicator={false}>
+        {options.map((option) => {
+          const isSelected = option === selectedValue;
+
+          return (
+            <Pressable
+              key={option}
+              accessibilityRole="button"
+              accessibilityState={{ selected: isSelected }}
+              style={[styles.optionChip, isSelected && styles.selectedOptionChip]}
+              onPress={() => onSelect(option)}>
+              <Text style={[styles.optionText, isSelected && styles.selectedOptionText]}>
+                {getLabel(option)}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
     </View>
   );
 }
@@ -172,6 +257,33 @@ const styles = StyleSheet.create({
   },
   field: {
     gap: 6,
+  },
+  optionList: {
+    gap: 8,
+    paddingVertical: 2,
+  },
+  optionChip: {
+    minHeight: 40,
+    minWidth: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#C9D3DA',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 12,
+  },
+  selectedOptionChip: {
+    borderColor: '#174A7C',
+    backgroundColor: '#174A7C',
+  },
+  optionText: {
+    color: '#43515A',
+    fontSize: 14,
+    fontWeight: '700',
+  },
+  selectedOptionText: {
+    color: '#FFFFFF',
   },
   label: {
     color: '#43515A',
