@@ -1,46 +1,22 @@
 import { NextRequest } from "next/server";
 import { listSnapshots } from "@/lib/db/snapshots";
+import { serializeSnapshotCsvRows } from "@investment/domain/csv";
 import { normalizeSnapshotListFilters } from "@investment/domain/snapshot-filters";
 
-function escapeCsvCell(value: string) {
-  if (/[",\n\r]/.test(value)) {
-    return `"${value.replace(/"/g, "\"\"")}"`;
-  }
-
-  return value;
-}
-
 function toCsv(rows: Awaited<ReturnType<typeof listSnapshots>>) {
-  const header = [
-    "accountName",
-    "snapshotMonth",
-    "market",
-    "assetCategory",
-    "assetName",
-    "currency",
-    "amount",
-    "returnRate",
-    "memo",
-  ];
-  const lines = [header.join(",")];
-
-  for (const row of rows) {
-    const csvRow = [
-      row.account.name,
-      row.snapshotMonth,
-      row.market,
-      row.assetCategory,
-      row.assetName,
-      row.currency,
-      row.amount.toString(),
-      row.returnRate.toString(),
-      row.memo ?? "",
-    ].map((cell) => escapeCsvCell(cell));
-
-    lines.push(csvRow.join(","));
-  }
-
-  return lines.join("\n");
+  return serializeSnapshotCsvRows(
+    rows.map((row) => ({
+      accountName: row.account.name,
+      snapshotMonth: row.snapshotMonth,
+      market: row.market,
+      assetCategory: row.assetCategory,
+      assetName: row.assetName,
+      currency: row.currency,
+      amount: row.amount.toString(),
+      returnRate: row.returnRate.toString(),
+      memo: row.memo,
+    })),
+  );
 }
 
 function formatFileNameDate(date: Date) {

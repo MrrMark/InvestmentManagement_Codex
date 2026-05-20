@@ -1,5 +1,29 @@
 export type ParsedCsvRow = Record<string, string>;
 
+export type SnapshotCsvRow = {
+  accountName: string;
+  snapshotMonth: string;
+  market: string;
+  assetCategory: string;
+  assetName: string;
+  currency: string;
+  amount: string | number;
+  returnRate: string | number;
+  memo?: string | null;
+};
+
+export const snapshotCsvHeaders = [
+  "accountName",
+  "snapshotMonth",
+  "market",
+  "assetCategory",
+  "assetName",
+  "currency",
+  "amount",
+  "returnRate",
+  "memo",
+] as const;
+
 function parseCsvLine(line: string) {
   const values: string[] = [];
   let current = "";
@@ -32,12 +56,55 @@ function parseCsvLine(line: string) {
   return values;
 }
 
-export function parseCsvText(text: string) {
-  const lines = text
+function parseCsvRecords(text: string) {
+  const records: string[] = [];
+  const normalizedText = text
+    .replace(/^\uFEFF/, "")
     .replace(/\r\n/g, "\n")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
+    .replace(/\r/g, "\n");
+  let current = "";
+  let inQuotes = false;
+
+  for (let index = 0; index < normalizedText.length; index += 1) {
+    const char = normalizedText[index];
+    const nextChar = normalizedText[index + 1];
+
+    if (char === '"') {
+      current += char;
+
+      if (inQuotes && nextChar === '"') {
+        current += nextChar;
+        index += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+      continue;
+    }
+
+    if (char === "\n" && !inQuotes) {
+      const record = current.trim();
+
+      if (record) {
+        records.push(record);
+      }
+      current = "";
+      continue;
+    }
+
+    current += char;
+  }
+
+  const record = current.trim();
+
+  if (record) {
+    records.push(record);
+  }
+
+  return records;
+}
+
+export function parseCsvText(text: string) {
+  const lines = parseCsvRecords(text);
 
   if (lines.length === 0) {
     return [];
@@ -53,4 +120,36 @@ export function parseCsvText(text: string) {
       return row;
     }, {});
   });
+}
+
+function escapeCsvCell(value: string) {
+  if (/[",\n\r]/.test(value)) {
+    return `"${value.replace(/"/g, "\"\"")}"`;
+  }
+
+  return value;
+}
+
+export function serializeSnapshotCsvRows(rows: readonly SnapshotCsvRow[]) {
+  const lines = [snapshotCsvHeaders.join(",")];
+
+  for (const row of rows) {
+    lines.push(
+      [
+        row.accountName,
+        row.snapshotMonth,
+        row.market,
+        row.assetCategory,
+        row.assetName,
+        row.currency,
+        String(row.amount),
+        String(row.returnRate),
+        row.memo ?? "",
+      ]
+        .map(escapeCsvCell)
+        .join(","),
+    );
+  }
+
+  return lines.join("\n");
 }
