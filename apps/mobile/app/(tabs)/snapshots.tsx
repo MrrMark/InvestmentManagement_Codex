@@ -1,20 +1,25 @@
+import { getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import { normalizeSnapshotListFilters } from '@investment/domain/snapshot-filters';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { formatAmount, sampleSnapshots, selectedSampleMonth } from '@/data/sample-snapshots';
-
-const filters = normalizeSnapshotListFilters({ snapshotMonth: selectedSampleMonth });
-
-const visibleSnapshots = sampleSnapshots
-  .filter((snapshot) => snapshot.snapshotMonth === filters.snapshotMonth)
-  .sort((a, b) => Number(b.amount) - Number(a.amount));
+import { formatAmount } from '@/data/seed-data';
+import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
 
 export default function SnapshotsScreen() {
+  const { snapshots, isLoading, error } = useMobileSnapshots();
+  const selectedMonth = getAvailableSnapshotMonths(snapshots)[0];
+  const filters = normalizeSnapshotListFilters({ snapshotMonth: selectedMonth });
+
+  const visibleSnapshots = snapshots
+    .filter((snapshot) => snapshot.snapshotMonth === filters.snapshotMonth)
+    .sort((a, b) => Number(b.amount) - Number(a.amount));
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>{selectedSampleMonth}</Text>
+        <Text style={styles.eyebrow}>{isLoading ? '불러오는 중' : selectedMonth}</Text>
         <Text style={styles.title}>스냅샷 목록</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>
 
       <View style={styles.list}>
@@ -57,6 +62,11 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+  },
+  error: {
+    color: '#B42318',
+    fontSize: 14,
+    fontWeight: '700',
   },
   list: {
     gap: 10,

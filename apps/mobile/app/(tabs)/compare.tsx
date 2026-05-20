@@ -1,18 +1,24 @@
-import { compareMonthOverMonth } from '@investment/domain/comparison';
+import { compareMonthOverMonth, getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { formatAmount, sampleSnapshots, selectedSampleMonth } from '@/data/sample-snapshots';
-
-const comparison = compareMonthOverMonth(sampleSnapshots, selectedSampleMonth);
+import { defaultSnapshotMonth, formatAmount } from '@/data/seed-data';
+import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
 
 export default function CompareScreen() {
+  const { snapshots, isLoading, error } = useMobileSnapshots();
+  const selectedMonth = getAvailableSnapshotMonths(snapshots)[0] ?? defaultSnapshotMonth;
+  const comparison = compareMonthOverMonth(snapshots, selectedMonth);
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
         <Text style={styles.eyebrow}>
-          {comparison.previousMonth ?? '이전 월 없음'} → {comparison.selectedMonth}
+          {isLoading
+            ? '불러오는 중'
+            : `${comparison.previousMonth ?? '이전 월 없음'} → ${comparison.selectedMonth}`}
         </Text>
         <Text style={styles.title}>월간 비교</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>
 
       <View style={styles.card}>
@@ -87,6 +93,11 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+  },
+  error: {
+    color: '#B42318',
+    fontSize: 14,
+    fontWeight: '700',
   },
   card: {
     gap: 12,

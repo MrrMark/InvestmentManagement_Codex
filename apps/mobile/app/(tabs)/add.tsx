@@ -9,6 +9,9 @@ import {
   View,
 } from 'react-native';
 
+import { createSnapshot } from '@/lib/db/snapshots';
+import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
+
 const initialForm = {
   snapshotMonth: '2026-04',
   assetName: '',
@@ -20,21 +23,40 @@ const initialForm = {
 export default function AddSnapshotScreen() {
   const [form, setForm] = useState(initialForm);
   const [message, setMessage] = useState<string | null>(null);
+  const { accounts, error } = useMobileSnapshots();
 
   function updateField(field: keyof typeof form, value: string) {
     setForm((current) => ({ ...current, [field]: value }));
   }
 
-  function validateForm() {
+  async function saveForm() {
+    const firstAccount = accounts[0];
+
+    if (!firstAccount) {
+      setMessage('저장할 계좌가 없습니다.');
+      return;
+    }
+
     const result = createSnapshotSchema('ko').safeParse({
       ...form,
-      accountId: 'sample-account',
+      accountId: firstAccount.id,
       market: markets[0],
       assetCategory: assetCategories[1],
       currency: currencies[0],
     });
 
-    setMessage(result.success ? '입력값이 검증되었습니다.' : result.error.issues[0]?.message ?? null);
+    if (!result.success) {
+      setMessage(result.error.issues[0]?.message ?? null);
+      return;
+    }
+
+    try {
+      await createSnapshot(result.data);
+      setForm(initialForm);
+      setMessage('스냅샷이 저장되었습니다.');
+    } catch (caughtError) {
+      setMessage(caughtError instanceof Error ? caughtError.message : '저장에 실패했습니다.');
+    }
   }
 
   return (
@@ -42,6 +64,7 @@ export default function AddSnapshotScreen() {
       <View style={styles.header}>
         <Text style={styles.eyebrow}>수동 입력</Text>
         <Text style={styles.title}>스냅샷 추가</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>
 
       <View style={styles.form}>
@@ -80,8 +103,8 @@ export default function AddSnapshotScreen() {
 
         {message ? <Text style={styles.message}>{message}</Text> : null}
 
-        <Pressable accessibilityRole="button" style={styles.button} onPress={validateForm}>
-          <Text style={styles.buttonText}>입력 검증</Text>
+        <Pressable accessibilityRole="button" style={styles.button} onPress={saveForm}>
+          <Text style={styles.buttonText}>스냅샷 저장</Text>
         </Pressable>
       </View>
     </ScrollView>
@@ -134,6 +157,11 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+  },
+  error: {
+    color: '#B42318',
+    fontSize: 14,
+    fontWeight: '700',
   },
   form: {
     gap: 14,
