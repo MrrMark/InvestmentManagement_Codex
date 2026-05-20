@@ -5,25 +5,30 @@ import {
   getTopAssets,
   getTotalAssetsByCurrency,
 } from '@investment/domain/aggregation';
+import { getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import type { ReactNode } from 'react';
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 
-import { formatAmount, sampleSnapshots, selectedSampleMonth } from '@/data/sample-snapshots';
+import { defaultSnapshotMonth, formatAmount } from '@/data/seed-data';
+import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
 
 export default function HomeScreen() {
   const { width } = useWindowDimensions();
+  const { snapshots, isLoading, error } = useMobileSnapshots();
   const isWide = width >= 760;
-  const totalAssets = getTotalAssetsByCurrency(sampleSnapshots, selectedSampleMonth);
-  const byAccount = getAssetsByAccount(sampleSnapshots, selectedSampleMonth);
-  const byMarket = getAssetsByMarket(sampleSnapshots, selectedSampleMonth);
-  const byCategory = getAssetsByCategory(sampleSnapshots, selectedSampleMonth);
-  const topAssets = getTopAssets(sampleSnapshots, selectedSampleMonth, 3);
+  const selectedMonth = getAvailableSnapshotMonths(snapshots)[0] ?? defaultSnapshotMonth;
+  const totalAssets = getTotalAssetsByCurrency(snapshots, selectedMonth);
+  const byAccount = getAssetsByAccount(snapshots, selectedMonth);
+  const byMarket = getAssetsByMarket(snapshots, selectedMonth);
+  const byCategory = getAssetsByCategory(snapshots, selectedMonth);
+  const topAssets = getTopAssets(snapshots, selectedMonth, 3);
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.eyebrow}>{selectedSampleMonth}</Text>
+        <Text style={styles.eyebrow}>{isLoading ? '불러오는 중' : selectedMonth}</Text>
         <Text style={styles.title}>월간 자산 대시보드</Text>
+        {error ? <Text style={styles.error}>{error}</Text> : null}
       </View>
 
       <View style={[styles.grid, isWide && styles.gridWide]}>
@@ -112,6 +117,11 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+  },
+  error: {
+    color: '#B42318',
+    fontSize: 14,
+    fontWeight: '700',
   },
   grid: {
     gap: 12,
