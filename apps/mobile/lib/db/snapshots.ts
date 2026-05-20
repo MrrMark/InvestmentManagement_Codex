@@ -88,6 +88,33 @@ export async function listSnapshots(): Promise<MobileSnapshot[]> {
   return rows.map(toMobileSnapshot);
 }
 
+export async function getSnapshotById(id: string): Promise<MobileSnapshot | null> {
+  const db = await getMobileDb();
+  const row = await db.getFirstAsync<SnapshotRow>(
+    `SELECT
+       asset_snapshots.id,
+       asset_snapshots.account_id,
+       asset_snapshots.snapshot_month,
+       asset_snapshots.market,
+       asset_snapshots.asset_category,
+       asset_snapshots.asset_name,
+       asset_snapshots.currency,
+       asset_snapshots.amount_text,
+       asset_snapshots.return_rate_text,
+       asset_snapshots.memo,
+       asset_snapshots.created_at,
+       asset_snapshots.updated_at,
+       accounts.name AS account_name
+     FROM asset_snapshots
+     INNER JOIN accounts ON accounts.id = asset_snapshots.account_id
+     WHERE asset_snapshots.id = ?
+     LIMIT 1`,
+    id,
+  );
+
+  return row ? toMobileSnapshot(row) : null;
+}
+
 export async function createSnapshot(input: CreateSnapshotInput) {
   const db = await getMobileDb();
   const now = new Date().toISOString();

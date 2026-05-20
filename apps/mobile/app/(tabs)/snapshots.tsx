@@ -1,5 +1,6 @@
 import { getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import { normalizeSnapshotListFilters } from '@investment/domain/snapshot-filters';
+import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
@@ -11,6 +12,7 @@ import { useSelectedMonth } from '@/hooks/use-selected-month';
 import { deleteSnapshot } from '@/lib/db/snapshots';
 
 export default function SnapshotsScreen() {
+  const router = useRouter();
   const { snapshots, isLoading, error, reload } = useMobileSnapshots();
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const months = useMemo(() => getAvailableSnapshotMonths(snapshots), [snapshots]);
@@ -73,15 +75,30 @@ export default function SnapshotsScreen() {
                 {snapshot.accountName} · {snapshot.market} · {snapshot.assetCategory}
               </Text>
             </View>
-            <Text style={styles.amount}>
-              {formatAmount(Number(snapshot.amount), snapshot.currency)}
-            </Text>
-            <Pressable
-              accessibilityRole="button"
-              style={styles.deleteButton}
-              onPress={() => requestDelete(snapshot.id, snapshot.assetName)}>
-              <Text style={styles.deleteText}>삭제</Text>
-            </Pressable>
+            <View style={styles.rowActions}>
+              <Text style={styles.amount}>
+                {formatAmount(Number(snapshot.amount), snapshot.currency)}
+              </Text>
+              <View style={styles.actionButtons}>
+                <Pressable
+                  accessibilityRole="button"
+                  style={styles.editButton}
+                  onPress={() =>
+                    router.push({
+                      pathname: '/snapshots/[id]/edit',
+                      params: { id: snapshot.id },
+                    })
+                  }>
+                  <Text style={styles.editText}>수정</Text>
+                </Pressable>
+                <Pressable
+                  accessibilityRole="button"
+                  style={styles.deleteButton}
+                  onPress={() => requestDelete(snapshot.id, snapshot.assetName)}>
+                  <Text style={styles.deleteText}>삭제</Text>
+                </Pressable>
+              </View>
+            </View>
           </View>
         ))}
       </View>
@@ -151,6 +168,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '800',
     textAlign: 'right',
+  },
+  rowActions: {
+    alignItems: 'flex-end',
+    gap: 8,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  editButton: {
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#B8D3E8',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+  },
+  editText: {
+    color: '#174A7C',
+    fontSize: 13,
+    fontWeight: '800',
   },
   deleteButton: {
     borderRadius: 8,
