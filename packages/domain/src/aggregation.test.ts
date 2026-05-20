@@ -8,7 +8,7 @@ import {
   getTopAssets,
   getTotalAssetsByCurrency,
   type AggregationSnapshot,
-} from "@/lib/domain/aggregation";
+} from "@investment/domain/aggregation";
 
 const snapshots: AggregationSnapshot[] = [
   {

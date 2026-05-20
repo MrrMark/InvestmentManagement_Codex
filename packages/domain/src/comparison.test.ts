@@ -4,8 +4,8 @@ import {
   compareMonthOverMonth,
   getAvailableSnapshotMonths,
   getPreviousSnapshotMonth,
-} from "@/lib/domain/comparison";
-import type { AggregationSnapshot } from "@/lib/domain/aggregation";
+} from "@investment/domain/comparison";
+import type { AggregationSnapshot } from "@investment/domain/aggregation";
 
 const snapshots: AggregationSnapshot[] = [
   {

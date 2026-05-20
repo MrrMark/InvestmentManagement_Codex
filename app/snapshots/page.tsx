@@ -8,12 +8,12 @@ import {
   listSnapshots,
   listSnapshotMonths,
 } from "@/lib/db/snapshots";
-import { normalizeSnapshotListFilters } from "@/lib/domain/snapshot-filters";
+import { normalizeSnapshotListFilters } from "@investment/domain/snapshot-filters";
 import {
   assetCategories,
   currencies,
   markets,
-} from "@/lib/domain/snapshot";
+} from "@investment/domain/snapshot";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { getLocale } from "@/lib/i18n/locale";
 

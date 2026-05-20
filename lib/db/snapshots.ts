@@ -5,11 +5,11 @@ import {
   createSnapshotSchema,
   importSnapshotCsvRowSchema,
   updateSnapshotSchema,
-} from "@/lib/domain/snapshot";
+} from "@investment/domain/snapshot";
 import {
   normalizeSnapshotListFilters,
   type SnapshotListFilters,
-} from "@/lib/domain/snapshot-filters";
+} from "@investment/domain/snapshot-filters";
 import { defaultLocale, type Locale } from "@/lib/i18n/locale";
 
 const snapshotInclude = {

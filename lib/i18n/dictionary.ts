@@ -1,4 +1,8 @@
+import { getSnapshotValidationMessages } from "@investment/domain";
 import type { Locale } from "@/lib/i18n/locale";
+
+const koValidation = getSnapshotValidationMessages("ko");
+const enValidation = getSnapshotValidationMessages("en");
 
 type Dictionary = {
   metadata: {
@@ -345,12 +349,7 @@ const ko: Dictionary = {
     unknownAccountPrefix: "알 수 없는 계좌: ",
   },
   validation: {
-    useYYYYMM: "YYYY-MM 형식으로 입력하세요.",
-    returnRateNumeric: "수익률은 숫자여야 합니다.",
-    returnRatePrecision: "수익률은 소수점 둘째 자리까지 입력할 수 있습니다.",
-    accountRequired: "계좌는 필수 입력값입니다.",
-    assetNameRequired: "자산명은 필수 입력값입니다.",
-    amountNonNegative: "금액은 0 이상이어야 합니다.",
+    ...koValidation,
   },
 };
 
@@ -535,12 +534,7 @@ const en: Dictionary = {
     unknownAccountPrefix: "Unknown account: ",
   },
   validation: {
-    useYYYYMM: "Use YYYY-MM format.",
-    returnRateNumeric: "Return rate must be numeric.",
-    returnRatePrecision: "Return rate must use up to 2 decimal places.",
-    accountRequired: "Account is required.",
-    assetNameRequired: "Asset name is required.",
-    amountNonNegative: "Amount must be non-negative.",
+    ...enValidation,
   },
 };
 

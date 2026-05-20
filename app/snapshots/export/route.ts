@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { listSnapshots } from "@/lib/db/snapshots";
-import { normalizeSnapshotListFilters } from "@/lib/domain/snapshot-filters";
+import { normalizeSnapshotListFilters } from "@investment/domain/snapshot-filters";
 
 function escapeCsvCell(value: string) {
   if (/[",\n\r]/.test(value)) {

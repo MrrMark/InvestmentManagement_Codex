@@ -2,7 +2,7 @@ import {
   assetCategories,
   currencies,
   markets,
-} from "@/lib/domain/snapshot";
+} from "@investment/domain/snapshot";
 import type { Account, AssetSnapshot } from "@prisma/client";
 
 type SnapshotFormLabels = {

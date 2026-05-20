@@ -11,7 +11,7 @@ import {
   getAssetsByMarket,
   getTopAssets,
   getTotalAssetsByCurrency,
-} from "@/lib/domain/aggregation";
+} from "@investment/domain/aggregation";
 import { getDictionary } from "@/lib/i18n/dictionary";
 import { getLocale } from "@/lib/i18n/locale";
 
