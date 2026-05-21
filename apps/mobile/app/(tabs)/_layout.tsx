@@ -22,28 +22,64 @@ export default function TabLayout() {
         name="index"
         options={{
           title: '대시보드',
-          tabBarIcon: ({ color }) => <MaterialIcons size={26} name="dashboard" color={color} />,
+          tabBarAccessibilityLabel: '대시보드 탭',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              size={26}
+              name="dashboard"
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="snapshots"
         options={{
           title: '스냅샷',
-          tabBarIcon: ({ color }) => <MaterialIcons size={26} name="list-alt" color={color} />,
+          tabBarAccessibilityLabel: '스냅샷 탭',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              size={26}
+              name="list-alt"
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="add"
         options={{
           title: '추가',
-          tabBarIcon: ({ color }) => <MaterialIcons size={26} name="add-circle-outline" color={color} />,
+          tabBarAccessibilityLabel: '추가 탭',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              size={26}
+              name="add-circle-outline"
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="compare"
         options={{
           title: '비교',
-          tabBarIcon: ({ color }) => <MaterialIcons size={26} name="compare-arrows" color={color} />,
+          tabBarAccessibilityLabel: '비교 탭',
+          tabBarIcon: ({ color }) => (
+            <MaterialIcons
+              accessibilityElementsHidden
+              importantForAccessibility="no-hide-descendants"
+              size={26}
+              name="compare-arrows"
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>

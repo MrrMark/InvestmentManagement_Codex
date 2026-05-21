@@ -15,6 +15,7 @@ export function MonthSelector({
 
   return (
     <ScrollView
+      accessibilityLabel="스냅샷 월 선택"
       horizontal
       contentContainerStyle={styles.container}
       showsHorizontalScrollIndicator={false}>
@@ -25,6 +26,7 @@ export function MonthSelector({
           <Pressable
             key={month}
             accessibilityRole="button"
+            accessibilityLabel={`스냅샷 월 ${month}`}
             accessibilityState={{ selected: isSelected }}
             style={[styles.chip, isSelected && styles.selectedChip]}
             onPress={() => onSelectMonth(month)}>
@@ -42,8 +44,10 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   chip: {
+    minHeight: 44,
     minWidth: 78,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#C9D3DA',
@@ -59,6 +63,7 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   selectedChipText: {
     color: '#FFFFFF',
@@ -66,5 +71,6 @@ const styles = StyleSheet.create({
   empty: {
     color: '#64727C',
     fontSize: 14,
+    lineHeight: 20,
   },
 });

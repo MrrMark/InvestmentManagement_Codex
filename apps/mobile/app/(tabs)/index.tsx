@@ -8,7 +8,7 @@ import {
 import { getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { EmptyState } from '@/components/empty-state';
 import { MonthSelector } from '@/components/month-selector';
@@ -17,9 +17,7 @@ import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
 
 export default function HomeScreen() {
-  const { width } = useWindowDimensions();
   const { snapshots, isLoading, error } = useMobileSnapshots();
-  const isWide = width >= 760;
   const months = useMemo(() => getAvailableSnapshotMonths(snapshots), [snapshots]);
   const [selectedMonth, setSelectedMonth] = useSelectedMonth(months, defaultSnapshotMonth);
   const totalAssets = getTotalAssetsByCurrency(snapshots, selectedMonth);
@@ -42,7 +40,7 @@ export default function HomeScreen() {
         onSelectMonth={setSelectedMonth}
       />
 
-      <View style={[styles.grid, isWide && styles.gridWide]}>
+      <View style={styles.grid}>
         <Section title="총 자산">
           {totalAssets.length === 0 ? (
             <EmptyState message="선택한 월에 등록된 스냅샷이 없습니다." />
@@ -114,7 +112,10 @@ function Breakdown({
 
 function MetricRow({ label, value }: { label: string; value: string }) {
   return (
-    <View style={styles.metricRow}>
+    <View
+      accessible
+      accessibilityLabel={`${label} ${value}`}
+      style={styles.metricRow}>
       <Text style={styles.metricLabel}>{label}</Text>
       <Text style={styles.metricValue}>{value}</Text>
     </View>
@@ -148,8 +149,6 @@ const styles = StyleSheet.create({
   },
   grid: {
     gap: 12,
-  },
-  gridWide: {
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
@@ -174,18 +173,24 @@ const styles = StyleSheet.create({
   },
   metricRow: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 16,
   },
   metricLabel: {
     flex: 1,
+    minWidth: 120,
     color: '#43515A',
     fontSize: 14,
+    lineHeight: 20,
   },
   metricValue: {
+    flexShrink: 1,
     color: '#172026',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
     textAlign: 'right',
   },
 });

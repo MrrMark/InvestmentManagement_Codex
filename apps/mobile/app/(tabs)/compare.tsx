@@ -85,7 +85,10 @@ function DeltaRow({ label, value }: { label: string; value: string }) {
   const isNegative = value.trim().startsWith('-');
 
   return (
-    <View style={styles.deltaRow}>
+    <View
+      accessible
+      accessibilityLabel={`${label} ${value}`}
+      style={styles.deltaRow}>
       <Text style={styles.deltaLabel}>{label}</Text>
       <Text style={[styles.deltaValue, isNegative && styles.negative]}>{value}</Text>
     </View>
@@ -133,18 +136,24 @@ const styles = StyleSheet.create({
   },
   deltaRow: {
     flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 16,
   },
   deltaLabel: {
     flex: 1,
+    minWidth: 120,
     color: '#43515A',
     fontSize: 14,
+    lineHeight: 20,
   },
   deltaValue: {
+    flexShrink: 1,
     color: '#146C43',
     fontSize: 14,
     fontWeight: '800',
+    lineHeight: 20,
     textAlign: 'right',
   },
   negative: {
