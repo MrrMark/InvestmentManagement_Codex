@@ -17,33 +17,46 @@ export default function AddSnapshotScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <View style={styles.header}>
-        <Text style={styles.eyebrow}>수동 입력</Text>
-        <Text style={styles.title}>스냅샷 추가</Text>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.eyebrow}>수동 입력</Text>
+          <Text style={styles.title}>스냅샷 추가</Text>
+          {error ? (
+            <Text
+              accessibilityLiveRegion="polite"
+              style={styles.error}>
+              {error}
+            </Text>
+          ) : null}
+        </View>
+
+        <SnapshotForm
+          accounts={accounts}
+          initialValues={getInitialSnapshotFormValues()}
+          submitLabel="스냅샷 저장"
+          onSubmit={handleSubmit}
+        />
+
+        <CsvImportPanel
+          accounts={accounts}
+          onImported={reload}
+        />
       </View>
-
-      <SnapshotForm
-        accounts={accounts}
-        initialValues={getInitialSnapshotFormValues()}
-        submitLabel="스냅샷 저장"
-        onSubmit={handleSubmit}
-      />
-
-      <CsvImportPanel
-        accounts={accounts}
-        onImported={reload}
-      />
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: 18,
+    alignItems: 'center',
     padding: 20,
     paddingTop: 64,
     backgroundColor: '#F6F7F9',
+  },
+  content: {
+    width: '100%',
+    maxWidth: 760,
+    gap: 18,
   },
   header: {
     gap: 6,
@@ -52,15 +65,18 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
 });

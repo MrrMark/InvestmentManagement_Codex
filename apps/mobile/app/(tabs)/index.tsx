@@ -31,7 +31,13 @@ export default function HomeScreen() {
       <View style={styles.header}>
         <Text style={styles.eyebrow}>{isLoading ? '불러오는 중' : selectedMonth}</Text>
         <Text style={styles.title}>월간 자산 대시보드</Text>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={styles.error}>
+            {error}
+          </Text>
+        ) : null}
       </View>
 
       <MonthSelector
@@ -136,16 +142,19 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   grid: {
     gap: 12,
@@ -155,6 +164,7 @@ const styles = StyleSheet.create({
   card: {
     minWidth: 280,
     flexGrow: 1,
+    flexShrink: 1,
     flexBasis: 320,
     gap: 12,
     borderRadius: 8,
@@ -167,6 +177,7 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 17,
     fontWeight: '800',
+    lineHeight: 23,
   },
   cardBody: {
     gap: 10,

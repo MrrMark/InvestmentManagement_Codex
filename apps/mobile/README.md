@@ -23,6 +23,11 @@ iPhone/iPad용 월간 자산 스냅샷 앱입니다. 현재 단계는 Expo Route
 - `npm run lint`: Expo lint 실행
 - `npm run typecheck`: TypeScript 검증
 
+## M5 QA Docs
+
+- [iPad and accessibility spec](docs/m5-ipad-accessibility-spec.md)
+- [Mobile smoke checklist](docs/smoke-checklist.md)
+
 ## Current Scope
 
 - Dashboard, Snapshots, Add, Compare 탭 셸

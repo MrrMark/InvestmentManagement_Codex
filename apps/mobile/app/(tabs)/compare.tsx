@@ -23,7 +23,13 @@ export default function CompareScreen() {
             : `${comparison.previousMonth ?? '이전 월 없음'} → ${comparison.selectedMonth}`}
         </Text>
         <Text style={styles.title}>월간 비교</Text>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={styles.error}>
+            {error}
+          </Text>
+        ) : null}
       </View>
 
       <MonthSelector
@@ -32,24 +38,26 @@ export default function CompareScreen() {
         onSelectMonth={setSelectedMonth}
       />
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>총 증감</Text>
-        {!comparison.hasPreviousMonth ? (
-          <EmptyState message="비교할 이전 월 데이터가 없습니다." />
-        ) : (
-          comparison.totalDelta.map((item) => (
-            <DeltaRow
-              key={item.currency}
-              label={item.currency}
-              value={formatAmount(item.deltaAmount, item.currency)}
-            />
-          ))
-        )}
-      </View>
+      <View style={styles.grid}>
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>총 증감</Text>
+          {!comparison.hasPreviousMonth ? (
+            <EmptyState message="비교할 이전 월 데이터가 없습니다." />
+          ) : (
+            comparison.totalDelta.map((item) => (
+              <DeltaRow
+                key={item.currency}
+                label={item.currency}
+                value={formatAmount(item.deltaAmount, item.currency)}
+              />
+            ))
+          )}
+        </View>
 
-      <DeltaSection title="계좌별 증감" groups={comparison.deltaByAccount} />
-      <DeltaSection title="시장별 증감" groups={comparison.deltaByMarket} />
-      <DeltaSection title="자산군별 증감" groups={comparison.deltaByCategory} />
+        <DeltaSection title="계좌별 증감" groups={comparison.deltaByAccount} />
+        <DeltaSection title="시장별 증감" groups={comparison.deltaByMarket} />
+        <DeltaSection title="자산군별 증감" groups={comparison.deltaByCategory} />
+      </View>
     </ScrollView>
   );
 }
@@ -87,7 +95,7 @@ function DeltaRow({ label, value }: { label: string; value: string }) {
   return (
     <View
       accessible
-      accessibilityLabel={`${label} ${value}`}
+      accessibilityLabel={`${label} 증감 ${value}`}
       style={styles.deltaRow}>
       <Text style={styles.deltaLabel}>{label}</Text>
       <Text style={[styles.deltaValue, isNegative && styles.negative]}>{value}</Text>
@@ -110,18 +118,30 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
+  },
+  grid: {
+    gap: 12,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
   },
   card: {
+    minWidth: 280,
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 320,
     gap: 12,
     borderRadius: 8,
     borderWidth: 1,
@@ -133,6 +153,7 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 17,
     fontWeight: '800',
+    lineHeight: 23,
   },
   deltaRow: {
     flexDirection: 'row',

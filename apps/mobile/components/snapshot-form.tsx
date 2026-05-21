@@ -110,7 +110,11 @@ export function SnapshotForm({
           getLabel={(value) => accounts.find((account) => account.id === value)?.name ?? value}
         />
       ) : (
-        <Text style={styles.message}>저장할 계좌가 없습니다.</Text>
+        <Text
+          accessibilityLiveRegion="polite"
+          style={styles.message}>
+          저장할 계좌가 없습니다.
+        </Text>
       )}
       <OptionSelector
         label="시장"
@@ -157,7 +161,13 @@ export function SnapshotForm({
         placeholder="선택"
       />
 
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      {message ? (
+        <Text
+          accessibilityLiveRegion="polite"
+          style={styles.message}>
+          {message}
+        </Text>
+      ) : null}
 
       <Pressable
         accessibilityRole="button"
@@ -284,10 +294,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#174A7C',
   },
   optionText: {
+    flexShrink: 1,
     color: '#43515A',
     fontSize: 14,
     fontWeight: '700',
     lineHeight: 20,
+    textAlign: 'center',
   },
   selectedOptionText: {
     color: '#FFFFFF',
@@ -312,6 +324,7 @@ const styles = StyleSheet.create({
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   button: {
     minHeight: 48,
@@ -328,5 +341,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
+    lineHeight: 22,
+    textAlign: 'center',
   },
 });

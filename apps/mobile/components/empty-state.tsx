@@ -2,7 +2,11 @@ import { StyleSheet, Text, View } from 'react-native';
 
 export function EmptyState({ message }: { message: string }) {
   return (
-    <View style={styles.container}>
+    <View
+      accessible
+      accessibilityLabel={message}
+      accessibilityLiveRegion="polite"
+      style={styles.container}>
       <Text style={styles.text}>{message}</Text>
     </View>
   );

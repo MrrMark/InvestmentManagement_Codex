@@ -106,8 +106,20 @@ export default function SnapshotsScreen() {
       <View style={styles.header}>
         <Text style={styles.eyebrow}>{isLoading ? '불러오는 중' : selectedMonth}</Text>
         <Text style={styles.title}>스냅샷 목록</Text>
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-        {actionMessage ? <Text style={styles.message}>{actionMessage}</Text> : null}
+        {error ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={styles.error}>
+            {error}
+          </Text>
+        ) : null}
+        {actionMessage ? (
+          <Text
+            accessibilityLiveRegion="polite"
+            style={styles.message}>
+            {actionMessage}
+          </Text>
+        ) : null}
       </View>
 
       <MonthSelector
@@ -306,21 +318,25 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   message: {
     color: '#174A7C',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   filters: {
     gap: 12,
@@ -341,6 +357,7 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 16,
     fontWeight: '800',
+    lineHeight: 22,
   },
   filterActions: {
     flexDirection: 'row',
@@ -360,6 +377,8 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 13,
     fontWeight: '800',
+    lineHeight: 18,
+    textAlign: 'center',
   },
   exportButton: {
     minHeight: 44,
@@ -378,6 +397,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
+    lineHeight: 18,
+    textAlign: 'center',
   },
   filterGroup: {
     gap: 6,
@@ -386,13 +407,14 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 13,
     fontWeight: '700',
+    lineHeight: 18,
   },
   filterOptions: {
     gap: 8,
     paddingVertical: 2,
   },
   filterChip: {
-    minHeight: 38,
+    minHeight: 44,
     minWidth: 58,
     alignItems: 'center',
     justifyContent: 'center',
@@ -432,6 +454,7 @@ const styles = StyleSheet.create({
     color: '#64727C',
     fontSize: 13,
     fontWeight: '700',
+    lineHeight: 18,
   },
   list: {
     gap: 10,
@@ -499,6 +522,8 @@ const styles = StyleSheet.create({
     color: '#174A7C',
     fontSize: 13,
     fontWeight: '800',
+    lineHeight: 18,
+    textAlign: 'center',
   },
   deleteButton: {
     minHeight: 44,
@@ -513,5 +538,7 @@ const styles = StyleSheet.create({
     color: '#B42318',
     fontSize: 13,
     fontWeight: '800',
+    lineHeight: 18,
+    textAlign: 'center',
   },
 });
