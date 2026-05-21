@@ -87,6 +87,8 @@ export function CsvImportPanel({
         </View>
         <Pressable
           accessibilityRole="button"
+          accessibilityLabel="CSV 파일 선택"
+          accessibilityState={{ disabled: isPicking }}
           disabled={isPicking}
           style={[styles.secondaryButton, isPicking && styles.disabledButton]}
           onPress={selectCsvFile}>
@@ -112,6 +114,8 @@ export function CsvImportPanel({
             </View>
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="유효한 CSV 행 가져오기"
+              accessibilityState={{ disabled: validCount === 0 || isImporting }}
               disabled={validCount === 0 || isImporting}
               style={[
                 styles.primaryButton,
@@ -128,6 +132,10 @@ export function CsvImportPanel({
             {preview.rows.map((row) => (
               <View
                 key={row.rowNumber}
+                accessible
+                accessibilityLabel={`${row.rowNumber}행 ${row.raw.assetName || '자산명 없음'} ${
+                  row.errors.length > 0 ? row.errors.join(', ') : '유효'
+                }`}
                 style={styles.previewRow}>
                 <Text style={styles.rowTitle}>
                   {row.rowNumber}행 · {row.raw.assetName || '자산명 없음'}
@@ -162,6 +170,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 12,
   },
@@ -178,6 +187,7 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 18,
     fontWeight: '800',
+    lineHeight: 24,
   },
   description: {
     color: '#64727C',
@@ -190,6 +200,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   secondaryButton: {
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#B8D3E8',
@@ -202,7 +214,9 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   primaryButton: {
+    minHeight: 44,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 8,
     backgroundColor: '#174A7C',
     paddingHorizontal: 12,
@@ -226,6 +240,7 @@ const styles = StyleSheet.create({
   previewHeader: {
     flexDirection: 'row',
     alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 12,
   },
@@ -237,6 +252,7 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 15,
     fontWeight: '800',
+    lineHeight: 21,
   },
   previewMeta: {
     color: '#64727C',
@@ -257,6 +273,7 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 14,
     fontWeight: '800',
+    lineHeight: 20,
   },
   rowMeta: {
     color: '#64727C',

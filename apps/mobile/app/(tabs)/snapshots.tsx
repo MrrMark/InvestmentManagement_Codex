@@ -123,6 +123,7 @@ export default function SnapshotsScreen() {
             {hasActiveFilters ? (
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel="필터 초기화"
                 style={styles.resetButton}
                 onPress={resetFilters}>
                 <Text style={styles.resetText}>초기화</Text>
@@ -130,6 +131,8 @@ export default function SnapshotsScreen() {
             ) : null}
             <Pressable
               accessibilityRole="button"
+              accessibilityLabel="CSV 내보내기"
+              accessibilityState={{ disabled: visibleSnapshots.length === 0 || isExporting }}
               disabled={visibleSnapshots.length === 0 || isExporting}
               style={[
                 styles.exportButton,
@@ -179,13 +182,20 @@ export default function SnapshotsScreen() {
         <View style={styles.keywordField}>
           <Text style={styles.filterLabel}>자산명</Text>
           <TextInput
+            accessibilityLabel="자산명 검색어"
+            accessibilityHint="스냅샷 목록을 자산명으로 필터링합니다."
             value={keywordFilter}
             onChangeText={setKeywordFilter}
             placeholder="검색어"
+            returnKeyType="search"
             style={styles.keywordInput}
           />
         </View>
-        <Text style={styles.resultCount}>표시 {visibleSnapshots.length}건</Text>
+        <Text
+          accessibilityLiveRegion="polite"
+          style={styles.resultCount}>
+          표시 {visibleSnapshots.length}건
+        </Text>
       </View>
 
       <View style={styles.list}>
@@ -215,6 +225,7 @@ export default function SnapshotsScreen() {
               <View style={styles.actionButtons}>
                 <Pressable
                   accessibilityRole="button"
+                  accessibilityLabel={`${snapshot.assetName} 수정`}
                   style={styles.editButton}
                   onPress={() =>
                     router.push({
@@ -226,6 +237,7 @@ export default function SnapshotsScreen() {
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
+                  accessibilityLabel={`${snapshot.assetName} 삭제`}
                   style={styles.deleteButton}
                   onPress={() => requestDelete(snapshot.id, snapshot.assetName)}>
                   <Text style={styles.deleteText}>삭제</Text>
@@ -254,6 +266,7 @@ function FilterChipGroup({
     <View style={styles.filterGroup}>
       <Text style={styles.filterLabel}>{label}</Text>
       <ScrollView
+        accessibilityLabel={`${label} 필터 옵션`}
         horizontal
         contentContainerStyle={styles.filterOptions}
         showsHorizontalScrollIndicator={false}>
@@ -264,6 +277,7 @@ function FilterChipGroup({
             <Pressable
               key={`${label}-${option.value || 'all'}`}
               accessibilityRole="button"
+              accessibilityLabel={`${label} 필터 ${option.label}`}
               accessibilityState={{ selected: isSelected }}
               style={[styles.filterChip, isSelected && styles.selectedFilterChip]}
               onPress={() => onSelect(option.value)}>
@@ -318,7 +332,8 @@ const styles = StyleSheet.create({
   },
   filterHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 12,
   },
@@ -329,9 +344,12 @@ const styles = StyleSheet.create({
   },
   filterActions: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
+    marginLeft: 'auto',
   },
   resetButton: {
+    minHeight: 44,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#C9D3DA',
@@ -344,8 +362,10 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   exportButton: {
+    minHeight: 44,
     minWidth: 58,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 8,
     backgroundColor: '#174A7C',
     paddingHorizontal: 12,
@@ -390,6 +410,7 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 13,
     fontWeight: '700',
+    lineHeight: 18,
   },
   selectedFilterChipText: {
     color: '#FFFFFF',
@@ -405,6 +426,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     color: '#172026',
     fontSize: 15,
+    lineHeight: 20,
   },
   resultCount: {
     color: '#64727C',
@@ -416,7 +438,8 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 16,
     borderRadius: 8,
@@ -426,33 +449,46 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   rowMain: {
-    flex: 1,
+    flexBasis: 190,
+    flexGrow: 1,
+    flexShrink: 1,
     gap: 5,
   },
   assetName: {
     color: '#172026',
     fontSize: 16,
     fontWeight: '800',
+    lineHeight: 22,
   },
   meta: {
     color: '#64727C',
     fontSize: 13,
+    lineHeight: 18,
   },
   amount: {
+    flexShrink: 1,
     color: '#172026',
     fontSize: 15,
     fontWeight: '800',
+    lineHeight: 21,
     textAlign: 'right',
   },
   rowActions: {
     alignItems: 'flex-end',
+    flexBasis: 140,
+    flexGrow: 1,
+    flexShrink: 1,
     gap: 8,
   },
   actionButtons: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
+    justifyContent: 'flex-end',
   },
   editButton: {
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#B8D3E8',
@@ -465,6 +501,8 @@ const styles = StyleSheet.create({
     fontWeight: '800',
   },
   deleteButton: {
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#F3B9B3',

@@ -161,6 +161,8 @@ export function SnapshotForm({
 
       <Pressable
         accessibilityRole="button"
+        accessibilityLabel={submitLabel}
+        accessibilityState={{ disabled: isSubmitting }}
         disabled={isSubmitting}
         style={[styles.button, isSubmitting && styles.disabledButton]}
         onPress={submitForm}>
@@ -195,6 +197,7 @@ function OptionSelector<OptionValue extends string>({
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <ScrollView
+        accessibilityLabel={`${label} 선택`}
         horizontal
         contentContainerStyle={styles.optionList}
         showsHorizontalScrollIndicator={false}>
@@ -205,6 +208,7 @@ function OptionSelector<OptionValue extends string>({
             <Pressable
               key={option}
               accessibilityRole="button"
+              accessibilityLabel={`${label} ${getLabel(option)}`}
               accessibilityState={{ selected: isSelected }}
               style={[styles.optionChip, isSelected && styles.selectedOptionChip]}
               onPress={() => onSelect(option)}>
@@ -236,6 +240,8 @@ function Field({
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
       <TextInput
+        accessibilityLabel={label}
+        accessibilityHint={placeholder === 'YYYY-MM' ? 'YYYY-MM 형식으로 입력합니다.' : undefined}
         value={value}
         onChangeText={onChangeText}
         placeholder={placeholder}
@@ -263,7 +269,7 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   optionChip: {
-    minHeight: 40,
+    minHeight: 44,
     minWidth: 64,
     alignItems: 'center',
     justifyContent: 'center',
@@ -281,6 +287,7 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   selectedOptionText: {
     color: '#FFFFFF',
@@ -289,6 +296,7 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   input: {
     minHeight: 44,
@@ -298,6 +306,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     color: '#172026',
     fontSize: 16,
+    lineHeight: 22,
   },
   message: {
     color: '#B42318',
@@ -305,7 +314,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   button: {
+    minHeight: 48,
     alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 8,
     backgroundColor: '#174A7C',
     padding: 14,
