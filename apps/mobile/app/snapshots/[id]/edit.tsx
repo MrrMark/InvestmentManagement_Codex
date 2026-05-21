@@ -71,34 +71,55 @@ export default function EditSnapshotScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-      <View style={styles.header}>
-        <Text style={styles.eyebrow}>{isLoading ? '불러오는 중' : snapshot?.snapshotMonth}</Text>
-        <Text style={styles.title}>스냅샷 수정</Text>
-        {accountsError ? <Text style={styles.error}>{accountsError}</Text> : null}
-        {error ? <Text style={styles.error}>{error}</Text> : null}
-      </View>
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={styles.eyebrow}>{isLoading ? '불러오는 중' : snapshot?.snapshotMonth}</Text>
+          <Text style={styles.title}>스냅샷 수정</Text>
+          {accountsError ? (
+            <Text
+              accessibilityLiveRegion="polite"
+              style={styles.error}>
+              {accountsError}
+            </Text>
+          ) : null}
+          {error ? (
+            <Text
+              accessibilityLiveRegion="polite"
+              style={styles.error}>
+              {error}
+            </Text>
+          ) : null}
+        </View>
 
-      {snapshot ? (
-        <SnapshotForm
-          accounts={accounts}
-          initialValues={getInitialSnapshotFormValues(snapshot)}
-          snapshotId={snapshot.id}
-          submitLabel="수정 저장"
-          onSubmit={handleSubmit}
-        />
-      ) : (
-        <EmptyState message={isLoading ? '스냅샷을 불러오는 중입니다.' : '수정할 스냅샷이 없습니다.'} />
-      )}
+        {snapshot ? (
+          <SnapshotForm
+            accounts={accounts}
+            initialValues={getInitialSnapshotFormValues(snapshot)}
+            snapshotId={snapshot.id}
+            submitLabel="수정 저장"
+            onSubmit={handleSubmit}
+          />
+        ) : (
+          <EmptyState
+            message={isLoading ? '스냅샷을 불러오는 중입니다.' : '수정할 스냅샷이 없습니다.'}
+          />
+        )}
+      </View>
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    gap: 18,
+    alignItems: 'center',
     padding: 20,
     paddingTop: 64,
     backgroundColor: '#F6F7F9',
+  },
+  content: {
+    width: '100%',
+    maxWidth: 760,
+    gap: 18,
   },
   header: {
     gap: 6,
@@ -107,15 +128,18 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
+    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
 });

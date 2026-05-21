@@ -10,7 +10,13 @@ export function MonthSelector({
   onSelectMonth: (month: string) => void;
 }) {
   if (months.length === 0) {
-    return <Text style={styles.empty}>선택할 스냅샷 월이 없습니다.</Text>;
+    return (
+      <Text
+        accessibilityLiveRegion="polite"
+        style={styles.empty}>
+        선택할 스냅샷 월이 없습니다.
+      </Text>
+    );
   }
 
   return (

@@ -101,7 +101,13 @@ export function CsvImportPanel({
         memo 헤더를 사용합니다.
       </Text>
 
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+      {message ? (
+        <Text
+          accessibilityLiveRegion="polite"
+          style={styles.message}>
+          {message}
+        </Text>
+      ) : null}
 
       {preview ? (
         <View style={styles.preview}>
@@ -176,12 +182,14 @@ const styles = StyleSheet.create({
   },
   headerText: {
     flex: 1,
+    minWidth: 180,
     gap: 4,
   },
   eyebrow: {
     color: '#49616E',
     fontSize: 13,
     fontWeight: '700',
+    lineHeight: 18,
   },
   title: {
     color: '#172026',
@@ -198,6 +206,7 @@ const styles = StyleSheet.create({
     color: '#174A7C',
     fontSize: 14,
     fontWeight: '700',
+    lineHeight: 20,
   },
   secondaryButton: {
     minHeight: 44,
@@ -212,6 +221,8 @@ const styles = StyleSheet.create({
     color: '#174A7C',
     fontSize: 13,
     fontWeight: '800',
+    lineHeight: 18,
+    textAlign: 'center',
   },
   primaryButton: {
     minHeight: 44,
@@ -226,6 +237,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
+    lineHeight: 18,
+    textAlign: 'center',
   },
   disabledButton: {
     borderColor: '#D5DDE3',
@@ -246,6 +259,7 @@ const styles = StyleSheet.create({
   },
   previewTitleGroup: {
     flex: 1,
+    minWidth: 180,
     gap: 3,
   },
   previewTitle: {
@@ -258,6 +272,7 @@ const styles = StyleSheet.create({
     color: '#64727C',
     fontSize: 13,
     fontWeight: '700',
+    lineHeight: 18,
   },
   previewRows: {
     gap: 8,
@@ -278,15 +293,18 @@ const styles = StyleSheet.create({
   rowMeta: {
     color: '#64727C',
     fontSize: 13,
+    lineHeight: 18,
   },
   rowValid: {
     color: '#176B45',
     fontSize: 13,
     fontWeight: '800',
+    lineHeight: 18,
   },
   rowError: {
     color: '#B42318',
     fontSize: 13,
     fontWeight: '700',
+    lineHeight: 18,
   },
 });
