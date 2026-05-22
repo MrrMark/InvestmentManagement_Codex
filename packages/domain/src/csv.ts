@@ -38,9 +38,33 @@ export type SnapshotCsvImportPreviewRow = {
 };
 
 export type SnapshotCsvImportPreview = {
+  errors: string[];
   rows: SnapshotCsvImportPreviewRow[];
   validRows: ImportSnapshotCsvRowInput[];
 };
+
+const requiredSnapshotCsvHeaders = snapshotCsvHeaders.filter(
+  (header) => header !== "memo",
+);
+
+const csvImportMessages = {
+  ko: {
+    emptyFile: "CSV가 비어 있습니다. 헤더 행을 포함해 주세요.",
+    missingHeaders: (headers: readonly string[]) =>
+      `CSV 헤더에 ${headers.join(", ")} 필드가 필요합니다.`,
+  },
+  en: {
+    emptyFile: "CSV is empty. Include a header row.",
+    missingHeaders: (headers: readonly string[]) =>
+      `CSV header must include ${headers.join(", ")}.`,
+  },
+} satisfies Record<
+  Locale,
+  {
+    emptyFile: string;
+    missingHeaders: (headers: readonly string[]) => string;
+  }
+>;
 
 function parseCsvLine(line: string) {
   const values: string[] = [];
@@ -121,16 +145,15 @@ function parseCsvRecords(text: string) {
   return records;
 }
 
-export function parseCsvText(text: string) {
+function parseCsvDocument(text: string) {
   const lines = parseCsvRecords(text);
 
   if (lines.length === 0) {
-    return [];
+    return { headers: [], rows: [] };
   }
 
   const headers = parseCsvLine(lines[0]);
-
-  return lines.slice(1).map((line) => {
+  const rows = lines.slice(1).map((line) => {
     const values = parseCsvLine(line);
 
     return headers.reduce<ParsedCsvRow>((row, header, index) => {
@@ -138,6 +161,12 @@ export function parseCsvText(text: string) {
       return row;
     }, {});
   });
+
+  return { headers, rows };
+}
+
+export function parseCsvText(text: string) {
+  return parseCsvDocument(text).rows;
 }
 
 function escapeCsvCell(value: string) {
@@ -189,9 +218,19 @@ export function buildSnapshotCsvImportPreview({
   accountNames: readonly string[];
   unknownAccountPrefix: string;
 }): SnapshotCsvImportPreview {
-  const rows = parseCsvText(text);
+  const { headers, rows } = parseCsvDocument(text);
   const accountNameSet = new Set(accountNames);
   const schema = importSnapshotCsvRowSchema(locale);
+  const messages = csvImportMessages[locale];
+  const missingHeaders = requiredSnapshotCsvHeaders.filter(
+    (header) => !headers.includes(header),
+  );
+  const previewErrors =
+    headers.length === 0
+      ? [messages.emptyFile]
+      : missingHeaders.length > 0
+        ? [messages.missingHeaders(missingHeaders)]
+        : [];
   const previewRows = rows.map((row, index) => {
     const parsedResult = schema.safeParse(row);
     const errors: string[] = [];
@@ -211,6 +250,7 @@ export function buildSnapshotCsvImportPreview({
   });
 
   return {
+    errors: previewErrors,
     rows: previewRows,
     validRows: previewRows.filter(hasParsedImportRow).map((row) => row.parsed),
   };

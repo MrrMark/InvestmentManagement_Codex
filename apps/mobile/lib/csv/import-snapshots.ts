@@ -13,6 +13,7 @@ import type { MobileAccount } from '@/lib/db/snapshots';
 
 export type SnapshotCsvPreview = {
   fileName: string;
+  errors: string[];
   rows: SnapshotCsvImportPreviewRow[];
   validRows: ImportSnapshotCsvRowInput[];
 };
