@@ -26,6 +26,9 @@ export type MobileSnapshot = AggregationSnapshot & {
   updatedAt: string;
 };
 
+const duplicateSnapshotMessage =
+  '같은 계좌, 월, 자산명, 자산 분류, 통화의 스냅샷이 이미 있습니다. 기존 행을 수정하거나 다른 값으로 입력해 주세요.';
+
 type AccountRow = {
   id: string;
   name: string;
@@ -119,8 +122,9 @@ export async function createSnapshot(input: CreateSnapshotInput) {
   const db = await getMobileDb();
   const now = new Date().toISOString();
 
-  await db.runAsync(
-    `INSERT INTO asset_snapshots (
+  try {
+    await db.runAsync(
+      `INSERT INTO asset_snapshots (
       id,
       user_id,
       account_id,
@@ -136,20 +140,23 @@ export async function createSnapshot(input: CreateSnapshotInput) {
       updated_at
     )
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    createId(),
-    localUserId,
-    input.accountId,
-    input.snapshotMonth,
-    input.market,
-    input.assetCategory,
-    input.assetName,
-    input.currency,
-    String(input.amount),
-    input.returnRate.toFixed(2),
-    input.memo || null,
-    now,
-    now,
-  );
+      createId(),
+      localUserId,
+      input.accountId,
+      input.snapshotMonth,
+      input.market,
+      input.assetCategory,
+      input.assetName,
+      input.currency,
+      String(input.amount),
+      input.returnRate.toFixed(2),
+      input.memo || null,
+      now,
+      now,
+    );
+  } catch (caughtError) {
+    throw toSnapshotStorageError(caughtError);
+  }
 }
 
 export async function importSnapshots(inputs: readonly CreateSnapshotInput[]) {
@@ -207,8 +214,9 @@ export async function updateSnapshot(input: UpdateSnapshotInput) {
   const db = await getMobileDb();
   const now = new Date().toISOString();
 
-  await db.runAsync(
-    `UPDATE asset_snapshots
+  try {
+    await db.runAsync(
+      `UPDATE asset_snapshots
      SET account_id = ?,
          snapshot_month = ?,
          market = ?,
@@ -220,18 +228,21 @@ export async function updateSnapshot(input: UpdateSnapshotInput) {
          memo = ?,
          updated_at = ?
      WHERE id = ?`,
-    input.accountId,
-    input.snapshotMonth,
-    input.market,
-    input.assetCategory,
-    input.assetName,
-    input.currency,
-    String(input.amount),
-    input.returnRate.toFixed(2),
-    input.memo || null,
-    now,
-    input.id,
-  );
+      input.accountId,
+      input.snapshotMonth,
+      input.market,
+      input.assetCategory,
+      input.assetName,
+      input.currency,
+      String(input.amount),
+      input.returnRate.toFixed(2),
+      input.memo || null,
+      now,
+      input.id,
+    );
+  } catch (caughtError) {
+    throw toSnapshotStorageError(caughtError);
+  }
 }
 
 export async function deleteSnapshot(id: string) {
@@ -263,4 +274,24 @@ function createId() {
   }
 
   return `snapshot-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+function toSnapshotStorageError(error: unknown) {
+  if (isDuplicateSnapshotError(error)) {
+    return new Error(duplicateSnapshotMessage);
+  }
+
+  if (error instanceof Error) {
+    return error;
+  }
+
+  return new Error('스냅샷 저장에 실패했습니다.');
+}
+
+function isDuplicateSnapshotError(error: unknown) {
+  return (
+    error instanceof Error &&
+    error.message.includes('UNIQUE constraint failed') &&
+    error.message.includes('asset_snapshots')
+  );
 }

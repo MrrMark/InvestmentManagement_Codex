@@ -34,19 +34,14 @@ iPhone/iPad용 월간 자산 스냅샷 앱입니다. 현재 단계는 Expo Route
 
 ## 다음 작업 리스트
 
-M6 이후 추천 순서:
+M7 이후 추천 순서:
 
-1. M7 Mobile data safety polish
-   - 로컬 SQLite 스냅샷의 중복 방지와 CSV import edge case를 점검한다.
-   - 현재 import 오류 메시지가 모호한 부분만 사용자 친화적으로 보강한다.
-   - 공유 domain validation 또는 parsing 동작이 바뀌는 경우에만 테스트를 추가한다.
-
-2. M8 Mobile usability regression pass
+1. M8 Mobile usability regression pass
    - 실제 사용 흐름 기준으로 긴 자산명, 큰 금액, 필터, 수정/삭제, empty state를 다시 점검한다.
    - 큰 컴포넌트 재작성보다 작은 레이아웃 수정 중심으로 처리한다.
    - M5에서 보강한 accessibility label과 Dynamic Type 동작을 유지한다.
 
-3. M9 Release readiness baseline
+2. M9 Release readiness baseline
    - 앱 메타데이터, 아이콘/splash asset, bundle identifier, build profile 방향을 확인한다.
    - 첫 모바일 산출물을 Expo Go 검증, local native build, EAS build 중 어디까지로 둘지 결정한다.
    - 명시 요청 전까지 broker 연동, 실시간 시세, 인증은 범위에 포함하지 않는다.

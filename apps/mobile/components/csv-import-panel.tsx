@@ -39,11 +39,7 @@ export function CsvImportPanel({
       }
 
       setPreview(nextPreview);
-      setMessage(
-        nextPreview.rows.length === 0
-          ? 'CSV가 비어 있습니다.'
-          : `${nextPreview.validRows.length}/${nextPreview.rows.length}행을 가져올 수 있습니다.`,
-      );
+      setMessage(getPreviewMessage(nextPreview));
     } catch (caughtError) {
       setPreview(null);
       setMessage(caughtError instanceof Error ? caughtError.message : 'CSV를 읽지 못했습니다.');
@@ -62,13 +58,16 @@ export function CsvImportPanel({
     setMessage(null);
 
     try {
-      const result = await importSnapshots(toCreateSnapshotInputs(preview.validRows, accounts));
-      const duplicateMessage =
-        result.skippedDuplicateCount > 0
-          ? ` 중복 ${result.skippedDuplicateCount}행은 건너뛰었습니다.`
-          : '';
+      const inputs = toCreateSnapshotInputs(preview.validRows, accounts);
 
-      setMessage(`${result.createdCount}행을 가져왔습니다.${duplicateMessage}`);
+      if (inputs.length === 0) {
+        setMessage('CSV의 계좌명을 현재 계좌 목록과 다시 확인해 주세요.');
+        return;
+      }
+
+      const result = await importSnapshots(inputs);
+
+      setMessage(getImportResultMessage(result));
       setPreview(null);
       await onImported();
     } catch (caughtError) {
@@ -162,6 +161,36 @@ export function CsvImportPanel({
       ) : null}
     </View>
   );
+}
+
+function getPreviewMessage(preview: SnapshotCsvPreview) {
+  if (preview.errors.length > 0) {
+    return preview.errors.join(' ');
+  }
+
+  if (preview.rows.length === 0) {
+    return '가져올 데이터 행이 없습니다. 헤더 아래에 스냅샷 행을 추가해 주세요.';
+  }
+
+  return `${preview.validRows.length}/${preview.rows.length}행을 가져올 수 있습니다.`;
+}
+
+function getImportResultMessage({
+  createdCount,
+  skippedDuplicateCount,
+}: {
+  createdCount: number;
+  skippedDuplicateCount: number;
+}) {
+  if (createdCount === 0 && skippedDuplicateCount > 0) {
+    return `이미 등록된 중복 ${skippedDuplicateCount}행만 있어 새로 가져온 행이 없습니다.`;
+  }
+
+  if (skippedDuplicateCount > 0) {
+    return `${createdCount}행을 가져왔습니다. 중복 ${skippedDuplicateCount}행은 건너뛰었습니다.`;
+  }
+
+  return `${createdCount}행을 가져왔습니다.`;
 }
 
 const styles = StyleSheet.create({
