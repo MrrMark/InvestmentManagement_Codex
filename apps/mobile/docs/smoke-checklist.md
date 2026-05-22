@@ -44,6 +44,7 @@ Look for:
 ## Native iOS Smoke
 
 Native smoke requires Xcode command line tools with `xcrun simctl`.
+Use [M6 Native Smoke Repeatability](m6-native-smoke-repeatability.md) when setting up a fresh local environment or recording repeatable iPhone/iPad evidence.
 
 ```bash
 xcrun simctl list devices available
