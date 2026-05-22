@@ -1,6 +1,7 @@
 import { compareMonthOverMonth, getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import { useMemo } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 import { EmptyState } from '@/components/empty-state';
 import { MonthSelector } from '@/components/month-selector';
@@ -9,10 +10,12 @@ import { useMobileSnapshots } from '@/hooks/use-mobile-snapshots';
 import { useSelectedMonth } from '@/hooks/use-selected-month';
 
 export default function CompareScreen() {
+  const { fontScale } = useWindowDimensions();
   const { snapshots, isLoading, error } = useMobileSnapshots();
   const months = useMemo(() => getAvailableSnapshotMonths(snapshots), [snapshots]);
   const [selectedMonth, setSelectedMonth] = useSelectedMonth(months, defaultSnapshotMonth);
   const comparison = compareMonthOverMonth(snapshots, selectedMonth);
+  const cardLayoutStyle = fontScale >= 1.5 ? styles.accessibilityCard : undefined;
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -39,7 +42,7 @@ export default function CompareScreen() {
       />
 
       <View style={styles.grid}>
-        <View style={styles.card}>
+        <View style={[styles.card, cardLayoutStyle]}>
           <Text style={styles.cardTitle}>총 증감</Text>
           {!comparison.hasPreviousMonth ? (
             <EmptyState message="비교할 이전 월 데이터가 없습니다." />
@@ -54,9 +57,21 @@ export default function CompareScreen() {
           )}
         </View>
 
-        <DeltaSection title="계좌별 증감" groups={comparison.deltaByAccount} />
-        <DeltaSection title="시장별 증감" groups={comparison.deltaByMarket} />
-        <DeltaSection title="자산군별 증감" groups={comparison.deltaByCategory} />
+        <DeltaSection
+          title="계좌별 증감"
+          groups={comparison.deltaByAccount}
+          cardStyle={cardLayoutStyle}
+        />
+        <DeltaSection
+          title="시장별 증감"
+          groups={comparison.deltaByMarket}
+          cardStyle={cardLayoutStyle}
+        />
+        <DeltaSection
+          title="자산군별 증감"
+          groups={comparison.deltaByCategory}
+          cardStyle={cardLayoutStyle}
+        />
       </View>
     </ScrollView>
   );
@@ -65,12 +80,14 @@ export default function CompareScreen() {
 function DeltaSection({
   title,
   groups,
+  cardStyle,
 }: {
   title: string;
   groups: { label: string; deltas: { currency: string; deltaAmount: number }[] }[];
+  cardStyle?: StyleProp<ViewStyle>;
 }) {
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, cardStyle]}>
       <Text style={styles.cardTitle}>{title}</Text>
       {groups.length === 0 ? (
         <EmptyState message="표시할 증감 데이터가 없습니다." />
@@ -118,19 +135,16 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
-    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   grid: {
     gap: 12,
@@ -149,11 +163,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 16,
   },
+  accessibilityCard: {
+    minWidth: '100%',
+    flexBasis: '100%',
+  },
   cardTitle: {
     color: '#172026',
     fontSize: 17,
     fontWeight: '800',
-    lineHeight: 23,
   },
   deltaRow: {
     flexDirection: 'row',
@@ -167,14 +184,12 @@ const styles = StyleSheet.create({
     minWidth: 120,
     color: '#43515A',
     fontSize: 14,
-    lineHeight: 20,
   },
   deltaValue: {
     flexShrink: 1,
     color: '#146C43',
     fontSize: 14,
     fontWeight: '800',
-    lineHeight: 20,
     textAlign: 'right',
   },
   negative: {
