@@ -23,6 +23,5 @@ const styles = StyleSheet.create({
   text: {
     color: '#64727C',
     fontSize: 14,
-    lineHeight: 20,
   },
 });

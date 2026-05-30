@@ -1,4 +1,6 @@
-import { Pressable, ScrollView, StyleSheet, Text } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+
+const controlTextMaxFontSizeMultiplier = 1.8;
 
 export function MonthSelector({
   months,
@@ -20,11 +22,9 @@ export function MonthSelector({
   }
 
   return (
-    <ScrollView
+    <View
       accessibilityLabel="스냅샷 월 선택"
-      horizontal
-      contentContainerStyle={styles.container}
-      showsHorizontalScrollIndicator={false}>
+      style={styles.container}>
       {months.map((month) => {
         const isSelected = month === selectedMonth;
 
@@ -36,22 +36,29 @@ export function MonthSelector({
             accessibilityState={{ selected: isSelected }}
             style={[styles.chip, isSelected && styles.selectedChip]}
             onPress={() => onSelectMonth(month)}>
-            <Text style={[styles.chipText, isSelected && styles.selectedChipText]}>{month}</Text>
+            <Text
+              maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+              style={[styles.chipText, isSelected && styles.selectedChipText]}>
+              {month}
+            </Text>
           </Pressable>
         );
       })}
-    </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     paddingVertical: 4,
   },
   chip: {
     minHeight: 44,
     minWidth: 78,
+    maxWidth: '100%',
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
@@ -66,10 +73,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#174A7C',
   },
   chipText: {
+    flexShrink: 1,
     color: '#43515A',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
+    textAlign: 'center',
   },
   selectedChipText: {
     color: '#FFFFFF',
@@ -77,6 +85,5 @@ const styles = StyleSheet.create({
   empty: {
     color: '#64727C',
     fontSize: 14,
-    lineHeight: 20,
   },
 });

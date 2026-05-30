@@ -8,6 +8,8 @@ import {
 } from '@/lib/csv/import-snapshots';
 import { importSnapshots, type MobileAccount } from '@/lib/db/snapshots';
 
+const controlTextMaxFontSizeMultiplier = 1.8;
+
 export function CsvImportPanel({
   accounts,
   onImported,
@@ -91,7 +93,11 @@ export function CsvImportPanel({
           disabled={isPicking}
           style={[styles.secondaryButton, isPicking && styles.disabledButton]}
           onPress={selectCsvFile}>
-          <Text style={styles.secondaryButtonText}>{isPicking ? '선택 중' : 'CSV 선택'}</Text>
+          <Text
+            maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+            style={styles.secondaryButtonText}>
+            {isPicking ? '선택 중' : 'CSV 선택'}
+          </Text>
         </Pressable>
       </View>
 
@@ -127,7 +133,9 @@ export function CsvImportPanel({
                 (validCount === 0 || isImporting) && styles.disabledButton,
               ]}
               onPress={importValidRows}>
-              <Text style={styles.primaryButtonText}>
+              <Text
+                maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+                style={styles.primaryButtonText}>
                 {isImporting ? '가져오는 중' : '가져오기'}
               </Text>
             </Pressable>
@@ -218,24 +226,20 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 13,
     fontWeight: '700',
-    lineHeight: 18,
   },
   title: {
     color: '#172026',
     fontSize: 18,
     fontWeight: '800',
-    lineHeight: 24,
   },
   description: {
     color: '#64727C',
     fontSize: 13,
-    lineHeight: 19,
   },
   message: {
     color: '#174A7C',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   secondaryButton: {
     minHeight: 44,
@@ -252,7 +256,6 @@ const styles = StyleSheet.create({
     color: '#174A7C',
     fontSize: 13,
     fontWeight: '800',
-    lineHeight: 18,
     textAlign: 'center',
   },
   primaryButton: {
@@ -269,7 +272,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
-    lineHeight: 18,
     textAlign: 'center',
   },
   disabledButton: {
@@ -300,13 +302,11 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 15,
     fontWeight: '800',
-    lineHeight: 21,
   },
   previewMeta: {
     color: '#64727C',
     fontSize: 13,
     fontWeight: '700',
-    lineHeight: 18,
   },
   previewRows: {
     gap: 8,
@@ -323,25 +323,21 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 14,
     fontWeight: '800',
-    lineHeight: 20,
   },
   rowMeta: {
     flexShrink: 1,
     color: '#64727C',
     fontSize: 13,
-    lineHeight: 18,
   },
   rowValid: {
     color: '#176B45',
     fontSize: 13,
     fontWeight: '800',
-    lineHeight: 18,
   },
   rowError: {
     flexShrink: 1,
     color: '#B42318',
     fontSize: 13,
     fontWeight: '700',
-    lineHeight: 18,
   },
 });
