@@ -277,11 +277,9 @@ function FilterChipGroup({
   return (
     <View style={styles.filterGroup}>
       <Text style={styles.filterLabel}>{label}</Text>
-      <ScrollView
+      <View
         accessibilityLabel={`${label} 필터 옵션`}
-        horizontal
-        contentContainerStyle={styles.filterOptions}
-        showsHorizontalScrollIndicator={false}>
+        style={styles.filterOptions}>
         {options.map((option) => {
           const isSelected = option.value === selectedValue;
 
@@ -299,7 +297,7 @@ function FilterChipGroup({
             </Pressable>
           );
         })}
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -363,10 +361,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
+    justifyContent: 'flex-end',
     marginLeft: 'auto',
+    maxWidth: '100%',
   },
   resetButton: {
     minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
     borderColor: '#C9D3DA',
@@ -410,12 +412,15 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   filterOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     paddingVertical: 2,
   },
   filterChip: {
     minHeight: 44,
     minWidth: 58,
+    maxWidth: 220,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
@@ -429,10 +434,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#174A7C',
   },
   filterChipText: {
+    flexShrink: 1,
     color: '#43515A',
     fontSize: 13,
     fontWeight: '700',
     lineHeight: 18,
+    textAlign: 'center',
   },
   selectedFilterChipText: {
     color: '#FFFFFF',
@@ -446,6 +453,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#C9D3DA',
     paddingHorizontal: 12,
+    paddingVertical: 9,
     color: '#172026',
     fontSize: 15,
     lineHeight: 20,
@@ -476,20 +484,24 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     gap: 5,
+    minWidth: 0,
   },
   assetName: {
+    flexShrink: 1,
     color: '#172026',
     fontSize: 16,
     fontWeight: '800',
     lineHeight: 22,
   },
   meta: {
+    flexShrink: 1,
     color: '#64727C',
     fontSize: 13,
     lineHeight: 18,
   },
   amount: {
     flexShrink: 1,
+    maxWidth: '100%',
     color: '#172026',
     fontSize: 15,
     fontWeight: '800',
@@ -498,10 +510,11 @@ const styles = StyleSheet.create({
   },
   rowActions: {
     alignItems: 'flex-end',
-    flexBasis: 140,
+    flexBasis: 168,
     flexGrow: 1,
     flexShrink: 1,
     gap: 8,
+    maxWidth: '100%',
   },
   actionButtons: {
     flexDirection: 'row',
@@ -511,6 +524,8 @@ const styles = StyleSheet.create({
   },
   editButton: {
     minHeight: 44,
+    minWidth: 58,
+    alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
@@ -527,6 +542,8 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     minHeight: 44,
+    minWidth: 58,
+    alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,

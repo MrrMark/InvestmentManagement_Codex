@@ -6,7 +6,7 @@ import {
   type CreateSnapshotInput,
 } from '@investment/domain/snapshot';
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { MobileAccount, MobileSnapshot } from '@/lib/db/snapshots';
 
@@ -206,11 +206,9 @@ function OptionSelector<OptionValue extends string>({
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
-      <ScrollView
+      <View
         accessibilityLabel={`${label} 선택`}
-        horizontal
-        contentContainerStyle={styles.optionList}
-        showsHorizontalScrollIndicator={false}>
+        style={styles.optionList}>
         {options.map((option) => {
           const isSelected = option === selectedValue;
 
@@ -228,7 +226,7 @@ function OptionSelector<OptionValue extends string>({
             </Pressable>
           );
         })}
-      </ScrollView>
+      </View>
     </View>
   );
 }
@@ -275,12 +273,15 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   optionList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
     paddingVertical: 2,
   },
   optionChip: {
     minHeight: 44,
     minWidth: 64,
+    maxWidth: 260,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
@@ -288,6 +289,7 @@ const styles = StyleSheet.create({
     borderColor: '#C9D3DA',
     backgroundColor: '#FFFFFF',
     paddingHorizontal: 12,
+    paddingVertical: 9,
   },
   selectedOptionChip: {
     borderColor: '#174A7C',
@@ -316,11 +318,13 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#C9D3DA',
     paddingHorizontal: 12,
+    paddingVertical: 10,
     color: '#172026',
     fontSize: 16,
     lineHeight: 22,
   },
   message: {
+    flexShrink: 1,
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
@@ -338,6 +342,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#8495A1',
   },
   buttonText: {
+    flexShrink: 1,
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
