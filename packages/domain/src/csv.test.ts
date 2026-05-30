@@ -58,6 +58,70 @@ test("serializeSnapshotCsvRows escapes commas, quotes, and newlines", () => {
   ]);
 });
 
+test("serialized snapshot CSV round-trips through import preview", () => {
+  const csvText = `\uFEFF${serializeSnapshotCsvRows([
+    {
+      accountName: "CMA",
+      snapshotMonth: "2026-04",
+      market: "KR",
+      assetCategory: "ETF",
+      assetName: "QA Round Trip",
+      currency: "KRW",
+      amount: "1234567.89",
+      returnRate: "3.50",
+      memo: 'web/mobile export, "quoted"',
+    },
+    {
+      accountName: "IRP",
+      snapshotMonth: "2026-04",
+      market: "US",
+      assetCategory: "STOCK",
+      assetName: "ACME Growth",
+      currency: "USD",
+      amount: "4200",
+      returnRate: "-1.25",
+      memo: "mobile export",
+    },
+  ])}`;
+
+  const preview = buildSnapshotCsvImportPreview({
+    text: csvText,
+    locale: "ko",
+    accountNames: ["CMA", "IRP"],
+    unknownAccountPrefix: "알 수 없는 계좌: ",
+  });
+
+  assert.deepEqual(preview.errors, []);
+  assert.deepEqual(
+    preview.rows.map((row) => row.errors),
+    [[], []],
+  );
+  assert.deepEqual(preview.validRows, [
+    {
+      accountName: "CMA",
+      snapshotMonth: "2026-04",
+      market: "KR",
+      assetCategory: "ETF",
+      assetName: "QA Round Trip",
+      currency: "KRW",
+      amount: 1234567.89,
+      returnRate: 3.5,
+      memo: 'web/mobile export, "quoted"',
+    },
+    {
+      accountName: "IRP",
+      snapshotMonth: "2026-04",
+      market: "US",
+      assetCategory: "STOCK",
+      assetName: "ACME Growth",
+      currency: "USD",
+      amount: 4200,
+      returnRate: -1.25,
+      memo: "mobile export",
+    },
+  ]);
+});
+
 test("buildSnapshotCsvImportPreview returns valid rows and row-level errors", () => {
   const preview = buildSnapshotCsvImportPreview({
     text: [
