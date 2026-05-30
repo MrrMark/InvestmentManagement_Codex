@@ -32,6 +32,10 @@ iPhone/iPad용 월간 자산 스냅샷 앱입니다. 현재 단계는 Expo Route
 
 - [Native smoke repeatability](docs/m6-native-smoke-repeatability.md)
 
+## M8 QA Docs
+
+- [Smoke and accessibility evidence](docs/m8-smoke-accessibility-evidence.md)
+
 ## M9 QA Docs
 
 - [Release readiness baseline](docs/m9-release-readiness-baseline.md)
