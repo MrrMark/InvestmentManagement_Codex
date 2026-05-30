@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 12,
@@ -239,6 +239,7 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     minHeight: 44,
+    alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
     borderWidth: 1,
@@ -247,6 +248,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   secondaryButtonText: {
+    flexShrink: 1,
     color: '#174A7C',
     fontSize: 13,
     fontWeight: '800',
@@ -263,6 +265,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   primaryButtonText: {
+    flexShrink: 1,
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
@@ -281,17 +284,19 @@ const styles = StyleSheet.create({
   },
   previewHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     gap: 12,
   },
   previewTitleGroup: {
     flex: 1,
+    flexShrink: 1,
     minWidth: 180,
     gap: 3,
   },
   previewTitle: {
+    flexShrink: 1,
     color: '#172026',
     fontSize: 15,
     fontWeight: '800',
@@ -314,12 +319,14 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   rowTitle: {
+    flexShrink: 1,
     color: '#172026',
     fontSize: 14,
     fontWeight: '800',
     lineHeight: 20,
   },
   rowMeta: {
+    flexShrink: 1,
     color: '#64727C',
     fontSize: 13,
     lineHeight: 18,
@@ -331,6 +338,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   rowError: {
+    flexShrink: 1,
     color: '#B42318',
     fontSize: 13,
     fontWeight: '700',
