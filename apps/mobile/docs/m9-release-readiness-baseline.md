@@ -56,6 +56,8 @@ cd apps/mobile && npx expo config --type public
 cd apps/mobile && npx expo export --platform web --output-dir /private/tmp/investment-mobile-release-web
 xcrun simctl list devices available
 cd apps/mobile && npm run ios
+# iPad fallback when localhost/openurl is unreliable:
+cd apps/mobile && npm run ios -- --lan --port 8085
 git diff --check
 git diff --cached --check
 ```
