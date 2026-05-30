@@ -3,7 +3,16 @@ import { getAvailableSnapshotMonths } from '@investment/domain/comparison';
 import { normalizeSnapshotListFilters } from '@investment/domain/snapshot-filters';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  useWindowDimensions,
+  View,
+} from 'react-native';
 
 import { EmptyState } from '@/components/empty-state';
 import { MonthSelector } from '@/components/month-selector';
@@ -15,6 +24,7 @@ import { deleteSnapshot } from '@/lib/db/snapshots';
 
 export default function SnapshotsScreen() {
   const router = useRouter();
+  const { fontScale, width } = useWindowDimensions();
   const { accounts, snapshots, isLoading, error, reload } = useMobileSnapshots();
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
@@ -41,6 +51,7 @@ export default function SnapshotsScreen() {
       filters.currency ||
       filters.keyword,
   );
+  const useCompactRows = width < 430 || fontScale >= 1.3;
 
   const visibleSnapshots = snapshots
     .filter(
@@ -223,18 +234,18 @@ export default function SnapshotsScreen() {
         {visibleSnapshots.map((snapshot) => (
           <View
             key={snapshot.id}
-            style={styles.row}>
+            style={[styles.row, useCompactRows && styles.compactRow]}>
             <View style={styles.rowMain}>
               <Text style={styles.assetName}>{snapshot.assetName}</Text>
               <Text style={styles.meta}>
                 {snapshot.accountName} · {snapshot.market} · {snapshot.assetCategory}
               </Text>
             </View>
-            <View style={styles.rowActions}>
-              <Text style={styles.amount}>
+            <View style={[styles.rowActions, useCompactRows && styles.compactRowActions]}>
+              <Text style={[styles.amount, useCompactRows && styles.compactAmount]}>
                 {formatAmount(Number(snapshot.amount), snapshot.currency)}
               </Text>
-              <View style={styles.actionButtons}>
+              <View style={[styles.actionButtons, useCompactRows && styles.compactActionButtons]}>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={`${snapshot.assetName} 수정`}
@@ -516,11 +527,25 @@ const styles = StyleSheet.create({
     gap: 8,
     maxWidth: '100%',
   },
+  compactRow: {
+    gap: 12,
+  },
+  compactRowActions: {
+    alignItems: 'stretch',
+    flexBasis: '100%',
+    width: '100%',
+  },
+  compactAmount: {
+    textAlign: 'left',
+  },
   actionButtons: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
     justifyContent: 'flex-end',
+  },
+  compactActionButtons: {
+    justifyContent: 'flex-start',
   },
   editButton: {
     minHeight: 44,
