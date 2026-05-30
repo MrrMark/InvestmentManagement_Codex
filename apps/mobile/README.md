@@ -32,14 +32,18 @@ iPhone/iPad용 월간 자산 스냅샷 앱입니다. 현재 단계는 Expo Route
 
 - [Native smoke repeatability](docs/m6-native-smoke-repeatability.md)
 
-## 다음 작업 리스트
+## M9 QA Docs
 
-M8 이후 추천 순서:
+- [Release readiness baseline](docs/m9-release-readiness-baseline.md)
 
-1. M9 Release readiness baseline
-   - 앱 메타데이터, 아이콘/splash asset, bundle identifier, build profile 방향을 확인한다.
-   - 첫 모바일 산출물을 Expo Go 검증, local native build, EAS build 중 어디까지로 둘지 결정한다.
-   - 명시 요청 전까지 broker 연동, 실시간 시세, 인증은 범위에 포함하지 않는다.
+## 진행 상태
+
+- M6 Native smoke repeatability 완료
+- M7 Mobile data safety polish 완료
+- M8 Mobile usability regression pass 완료
+- M9 Release readiness baseline 완료
+
+후속 릴리즈 작업은 local native build, EAS build, TestFlight/App Store 제출 중 어느 산출물을 목표로 할지 결정한 뒤 별도 범위로 진행합니다.
 
 ## Current Scope
 
