@@ -126,7 +126,7 @@ A personal investor who wants a structured way to track assets monthly.
 - dividend tracking automation
 - multi-user collaboration
 - advanced goal planning
-- mobile-native app
+- mobile-native store distribution / TestFlight release
 - push notifications
 
 ---

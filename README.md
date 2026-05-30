@@ -2,7 +2,7 @@
 
 월별 자산 스냅샷을 기록하고 현재 포트폴리오 상태를 확인하기 위한 개인 투자 관리 앱입니다. 이 프로젝트는 거래 시스템이나 실시간 시세 연동 서비스가 아니라, 직접 입력한 월간 자산 데이터를 안정적으로 저장하고 비교하는 MVP에 초점을 맞춥니다.
 
-현재 구현은 대시보드, 스냅샷 CRUD, CSV import/export, 월간 비교, Docker 실행 검증까지 포함합니다. GitHub 방문자가 프로젝트 목적과 실행 방법을 빠르게 이해할 수 있도록, 아래 내용은 한글 설명을 먼저 제공하고 같은 내용을 영어로 이어서 제공합니다.
+현재 구현은 웹 MVP의 대시보드, 스냅샷 CRUD, CSV import/export, 월간 비교, Docker 실행 검증과 Expo 기반 모바일 MVP를 포함합니다. GitHub 방문자가 프로젝트 목적과 실행 방법을 빠르게 이해할 수 있도록, 아래 내용은 한글 설명을 먼저 제공하고 같은 내용을 영어로 이어서 제공합니다.
 
 ## 프로젝트 개요
 
@@ -164,6 +164,7 @@ userId + accountId + snapshotMonth + assetName + assetCategory + currency
 
 ```text
 app/           화면과 라우트, 서버 액션
+apps/mobile/   Expo 기반 iPhone/iPad 모바일 MVP
 components/    공통 UI 컴포넌트
 lib/db/        Prisma 조회와 폼 데이터 파싱
 packages/domain/
@@ -188,6 +189,10 @@ prisma/        스키마, 마이그레이션, 시드 데이터
 - CSV import
 - CSV export (현재 필터 결과 다운로드)
 - Docker 기반 실행 검증
+- Expo 기반 모바일 MVP
+  - Dashboard, Snapshots, Add, Compare 탭
+  - 로컬 SQLite 저장소
+  - 스냅샷 생성/수정/삭제, 필터, CSV import/export
 
 ## 현재 범위에 포함되지 않는 기능
 
@@ -196,13 +201,15 @@ prisma/        스키마, 마이그레이션, 시드 데이터
 - 거래 원장형 회계 처리
 - 복잡한 세금 계산
 - OAuth / 소셜 로그인
-- 모바일 앱
+- 모바일 앱의 TestFlight/App Store 제출
+- EAS build 산출물
 - 다중 사용자 조직 기능
 - AI 추천 기능
 
 ## 참고
 
 - 앱은 데모 시드를 포함하므로 초기 실행 후 바로 화면을 확인할 수 있습니다.
+- 모바일 MVP의 실행과 QA 상태는 `apps/mobile/README.md`에서 확인할 수 있습니다.
 - Prisma는 현재 6.x 기준으로 유지되고 있습니다.
 - README는 현재 코드 기준 사실만 설명하며, 아직 구현되지 않은 기능은 포함하지 않습니다.
 
@@ -212,7 +219,7 @@ prisma/        스키마, 마이그레이션, 시드 데이터
 
 InvestmentManagement_Codex is a personal investment management app for recording monthly asset snapshots and reviewing the current portfolio state. It is not a trading platform or a real-time market integration product. The current MVP focuses on storing manually entered monthly asset data and comparing changes over time.
 
-The current implementation includes a dashboard, snapshot CRUD, CSV import/export, month-over-month comparison, and Docker-based runtime validation. The Korean documentation above is the primary version, and the following English section mirrors the same scope in the same order.
+The current implementation includes the web MVP dashboard, snapshot CRUD, CSV import/export, month-over-month comparison, Docker-based runtime validation, and an Expo-based mobile MVP. The Korean documentation above is the primary version, and the following English section mirrors the same scope in the same order.
 
 ## Overview
 
@@ -374,6 +381,7 @@ userId + accountId + snapshotMonth + assetName + assetCategory + currency
 
 ```text
 app/           routes, pages, and server actions
+apps/mobile/   Expo-based iPhone/iPad mobile MVP
 components/    shared UI components
 lib/db/        Prisma queries and form parsing
 packages/domain/
@@ -398,6 +406,10 @@ The current codebase includes:
 - CSV import
 - CSV export (current filtered rows)
 - Docker-based runtime validation
+- Expo-based mobile MVP
+  - Dashboard, Snapshots, Add, and Compare tabs
+  - Local SQLite storage
+  - Snapshot create/update/delete, filters, CSV import/export
 
 ## Out of Scope
 
@@ -406,12 +418,14 @@ The current codebase includes:
 - Full transaction ledger accounting
 - Complex tax calculations
 - OAuth / social login
-- Mobile app
+- TestFlight/App Store submission for the mobile app
+- EAS build artifacts
 - Multi-user organization features
 - AI recommendation features
 
 ## Notes
 
 - The app includes demo seed data, so the UI can be reviewed right after setup.
+- Mobile MVP setup and QA status are documented in `apps/mobile/README.md`.
 - Prisma currently remains on the 6.x line.
 - This README only describes what is already implemented in the current codebase.

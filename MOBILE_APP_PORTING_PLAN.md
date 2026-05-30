@@ -8,6 +8,15 @@
 
 작성 기준일: 2026-05-20
 
+현재 상태 메모 (2026-05-30):
+
+- `packages/domain` 분리와 웹 연동은 완료됐다.
+- `apps/mobile` Expo 앱은 로컬 SQLite 기반 Mobile MVP로 구현되어 있다.
+- 모바일 Dashboard, Snapshots, Add/Edit, Compare, CSV import/export 흐름이 존재한다.
+- M6 native smoke repeatability, M8 usability/accessibility evidence, M9 release readiness baseline 문서가 추가되어 있다.
+- 현재 첫 산출물 기준은 Expo Go 검증, local simulator smoke, web fallback smoke다.
+- EAS build, TestFlight, App Store 제출은 아직 후속 릴리즈 범위이며 현재 MVP 완료 기준에 포함하지 않는다.
+
 ---
 
 ## 2. 현재 프로젝트 상태
@@ -72,8 +81,8 @@ SwiftUI를 선택할 조건:
 | Local DB | `expo-sqlite` |
 | DB access | 작은 repository 함수부터 시작, 복잡해지면 Drizzle 검토 |
 | Charts | `react-native-svg` 기반 chart library 또는 직접 단순 bar/list 표현 |
-| Build | EAS Build |
-| Test distribution | TestFlight |
+| Current build baseline | Expo Go + local simulator smoke |
+| Future distribution | EAS Build 또는 TestFlight는 별도 릴리즈 범위에서 결정 |
 
 버전 원칙:
 
@@ -555,23 +564,23 @@ MVP는 offline-first local-only 앱이다.
 
 목표:
 
-- 실제 기기와 TestFlight에서 검증한다.
+- 첫 모바일 산출물의 기준을 정하고, 선택한 기준에 맞춰 검증한다. 현재 M9 기준선은 Expo Go, local simulator, web fallback smoke까지이며 TestFlight는 후속 범위다.
 
 작업:
 
 - app icon, launch screen, display name 정리
 - bundle identifier 설정
 - privacy nutrition label 초안 작성
-- TestFlight internal build
-- 실제 iPhone/iPad smoke test
+- Expo Go 또는 local native smoke test
+- TestFlight를 선택한 경우에만 internal build
 - crash/logging 최소 구성 검토
 
 완료 기준:
 
-- EAS production 또는 preview build 성공
-- TestFlight 설치 가능
-- 실제 기기에서 CRUD/import/export smoke 통과
-- App Store 제출 전 체크리스트 준비
+- 첫 산출물 기준이 문서화됨
+- 선택한 기준의 smoke 통과 또는 blocker 기록
+- local-only 데이터 처리 방향 문서화
+- EAS/TestFlight를 선택한 경우에만 해당 build와 설치 검증 완료
 
 ---
 
@@ -649,7 +658,7 @@ MVP는 offline-first local-only 앱이다.
 7. Filters/search
 8. CSV import/export
 9. iPad layout
-10. TestFlight readiness
+10. Release readiness baseline
 
 ---
 
@@ -666,7 +675,7 @@ MVP는 offline-first local-only 앱이다.
 | PR-5 | mobile dashboard/compare | domain tests, simulator smoke |
 | PR-6 | CSV import/export | round-trip smoke |
 | PR-7 | iPad/accessibility polish | iPad simulator screenshots |
-| PR-8 | EAS/TestFlight readiness | EAS build |
+| PR-8 | release readiness baseline | expo-doctor, simulator/web fallback smoke |
 
 ---
 
@@ -683,7 +692,9 @@ MVP는 offline-first local-only 앱이다.
 - TypeScript strict 유지
 - domain business logic 테스트 통과
 - iPhone/iPad 주요 simulator smoke 통과
-- TestFlight 내부 배포 가능 상태
+- 첫 산출물 기준과 release readiness baseline 문서화
+
+TestFlight 내부 배포 가능 상태는 첫 산출물을 TestFlight로 결정한 별도 릴리즈 phase에서 완료 기준으로 둔다.
 
 ---
 

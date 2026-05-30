@@ -194,4 +194,5 @@
 
 - MVP 핵심 흐름(입력/조회/수정/삭제/집계/비교/CSV import)이 코드상 연결되어 있음
 - build/test/DB schema 상태 모두 정상
-- 실제 브라우저 상호작용 기준으로는 CSV preview 같은 UI 인터랙션 항목만 최종 수동 점검하면 안정적으로 마무리 가능
+- CSV preview 수동 QA까지 완료되어 웹 MVP의 import/export 상호작용 기준도 검증됨
+- 모바일 MVP는 별도 `apps/mobile` 문서에서 현재 범위와 release readiness 상태를 추적함
