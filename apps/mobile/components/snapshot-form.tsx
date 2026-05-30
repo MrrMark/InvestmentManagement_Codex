@@ -10,6 +10,8 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import type { MobileAccount, MobileSnapshot } from '@/lib/db/snapshots';
 
+const controlTextMaxFontSizeMultiplier = 1.8;
+
 export type SnapshotFormValues = {
   snapshotMonth: string;
   accountId: string;
@@ -176,7 +178,11 @@ export function SnapshotForm({
         disabled={isSubmitting}
         style={[styles.button, isSubmitting && styles.disabledButton]}
         onPress={submitForm}>
-        <Text style={styles.buttonText}>{isSubmitting ? '저장 중' : submitLabel}</Text>
+        <Text
+          maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+          style={styles.buttonText}>
+          {isSubmitting ? '저장 중' : submitLabel}
+        </Text>
       </Pressable>
     </View>
   );
@@ -220,7 +226,9 @@ function OptionSelector<OptionValue extends string>({
               accessibilityState={{ selected: isSelected }}
               style={[styles.optionChip, isSelected && styles.selectedOptionChip]}
               onPress={() => onSelect(option)}>
-              <Text style={[styles.optionText, isSelected && styles.selectedOptionText]}>
+              <Text
+                maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+                style={[styles.optionText, isSelected && styles.selectedOptionText]}>
                 {getLabel(option)}
               </Text>
             </Pressable>
@@ -300,7 +308,6 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
     textAlign: 'center',
   },
   selectedOptionText: {
@@ -310,7 +317,6 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   input: {
     minHeight: 44,
@@ -321,14 +327,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     color: '#172026',
     fontSize: 16,
-    lineHeight: 22,
   },
   message: {
     flexShrink: 1,
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   button: {
     minHeight: 48,
@@ -346,7 +350,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
-    lineHeight: 22,
     textAlign: 'center',
   },
 });

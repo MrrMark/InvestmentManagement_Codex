@@ -128,18 +128,15 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
-    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
 });

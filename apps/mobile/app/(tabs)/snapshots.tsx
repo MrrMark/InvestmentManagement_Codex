@@ -22,6 +22,8 @@ import { useSelectedMonth } from '@/hooks/use-selected-month';
 import { exportSnapshotsToCsv } from '@/lib/csv/export-snapshots';
 import { deleteSnapshot } from '@/lib/db/snapshots';
 
+const controlTextMaxFontSizeMultiplier = 1.8;
+
 export default function SnapshotsScreen() {
   const router = useRouter();
   const { fontScale, width } = useWindowDimensions();
@@ -149,7 +151,11 @@ export default function SnapshotsScreen() {
                 accessibilityLabel="필터 초기화"
                 style={styles.resetButton}
                 onPress={resetFilters}>
-                <Text style={styles.resetText}>초기화</Text>
+                <Text
+                  maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+                  style={styles.resetText}>
+                  초기화
+                </Text>
               </Pressable>
             ) : null}
             <Pressable
@@ -162,7 +168,11 @@ export default function SnapshotsScreen() {
                 (visibleSnapshots.length === 0 || isExporting) && styles.disabledExportButton,
               ]}
               onPress={handleExport}>
-              <Text style={styles.exportText}>{isExporting ? '준비 중' : 'CSV'}</Text>
+              <Text
+                maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+                style={styles.exportText}>
+                {isExporting ? '준비 중' : 'CSV'}
+              </Text>
             </Pressable>
           </View>
         </View>
@@ -256,14 +266,22 @@ export default function SnapshotsScreen() {
                       params: { id: snapshot.id },
                     })
                   }>
-                  <Text style={styles.editText}>수정</Text>
+                  <Text
+                    maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+                    style={styles.editText}>
+                    수정
+                  </Text>
                 </Pressable>
                 <Pressable
                   accessibilityRole="button"
                   accessibilityLabel={`${snapshot.assetName} 삭제`}
                   style={styles.deleteButton}
                   onPress={() => requestDelete(snapshot.id, snapshot.assetName)}>
-                  <Text style={styles.deleteText}>삭제</Text>
+                  <Text
+                    maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+                    style={styles.deleteText}>
+                    삭제
+                  </Text>
                 </Pressable>
               </View>
             </View>
@@ -302,7 +320,9 @@ function FilterChipGroup({
               accessibilityState={{ selected: isSelected }}
               style={[styles.filterChip, isSelected && styles.selectedFilterChip]}
               onPress={() => onSelect(option.value)}>
-              <Text style={[styles.filterChipText, isSelected && styles.selectedFilterChipText]}>
+              <Text
+                maxFontSizeMultiplier={controlTextMaxFontSizeMultiplier}
+                style={[styles.filterChipText, isSelected && styles.selectedFilterChipText]}>
                 {option.label}
               </Text>
             </Pressable>
@@ -327,25 +347,21 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
-    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   message: {
     color: '#174A7C',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   filters: {
     gap: 12,
@@ -366,7 +382,6 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 16,
     fontWeight: '800',
-    lineHeight: 22,
   },
   filterActions: {
     flexDirection: 'row',
@@ -390,7 +405,6 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 13,
     fontWeight: '800',
-    lineHeight: 18,
     textAlign: 'center',
   },
   exportButton: {
@@ -410,7 +424,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '800',
-    lineHeight: 18,
     textAlign: 'center',
   },
   filterGroup: {
@@ -420,7 +433,6 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 13,
     fontWeight: '700',
-    lineHeight: 18,
   },
   filterOptions: {
     flexDirection: 'row',
@@ -449,7 +461,6 @@ const styles = StyleSheet.create({
     color: '#43515A',
     fontSize: 13,
     fontWeight: '700',
-    lineHeight: 18,
     textAlign: 'center',
   },
   selectedFilterChipText: {
@@ -467,13 +478,11 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     color: '#172026',
     fontSize: 15,
-    lineHeight: 20,
   },
   resultCount: {
     color: '#64727C',
     fontSize: 13,
     fontWeight: '700',
-    lineHeight: 18,
   },
   list: {
     gap: 10,
@@ -502,13 +511,11 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 16,
     fontWeight: '800',
-    lineHeight: 22,
   },
   meta: {
     flexShrink: 1,
     color: '#64727C',
     fontSize: 13,
-    lineHeight: 18,
   },
   amount: {
     flexShrink: 1,
@@ -516,7 +523,6 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 15,
     fontWeight: '800',
-    lineHeight: 21,
     textAlign: 'right',
   },
   rowActions: {
@@ -562,7 +568,6 @@ const styles = StyleSheet.create({
     color: '#174A7C',
     fontSize: 13,
     fontWeight: '800',
-    lineHeight: 18,
     textAlign: 'center',
   },
   deleteButton: {
@@ -580,7 +585,6 @@ const styles = StyleSheet.create({
     color: '#B42318',
     fontSize: 13,
     fontWeight: '800',
-    lineHeight: 18,
     textAlign: 'center',
   },
 });

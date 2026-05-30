@@ -155,19 +155,16 @@ const styles = StyleSheet.create({
     color: '#49616E',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   title: {
     color: '#172026',
     fontSize: 28,
     fontWeight: '800',
-    lineHeight: 34,
   },
   error: {
     color: '#B42318',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
   },
   grid: {
     gap: 12,
@@ -194,7 +191,6 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 17,
     fontWeight: '800',
-    lineHeight: 23,
   },
   cardBody: {
     gap: 10,
@@ -212,7 +208,6 @@ const styles = StyleSheet.create({
     minWidth: 120,
     color: '#43515A',
     fontSize: 14,
-    lineHeight: 20,
   },
   metricValue: {
     flexShrink: 1,
@@ -220,7 +215,6 @@ const styles = StyleSheet.create({
     color: '#172026',
     fontSize: 14,
     fontWeight: '700',
-    lineHeight: 20,
     textAlign: 'right',
   },
 });
