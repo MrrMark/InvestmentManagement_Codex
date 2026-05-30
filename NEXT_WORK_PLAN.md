@@ -6,23 +6,48 @@
 
 이 문서는 현재 프로젝트 문서에서 확인된 후속 작업을 실제 구현 전에 검토할 수 있도록 작업별 플랜과 명세로 정리한다.
 
-이번 문서의 범위는 계획 수립과 명세 작성까지이며, 코드 구현은 포함하지 않는다.
+아래 M8/M9/Web CSV/문서 정합성 섹션은 완료된 작업의 원래 명세를 보존한다. 최신 후속 작업 판단은 이 상단 상태 업데이트를 우선한다.
 
 ## 현재 판단
 
-- 웹 MVP 핵심 기능은 구현 완료 상태로 기록되어 있다.
-- 모바일 앱은 Expo Router 기반 MVP가 존재하며, M5/M6 QA 문서 이후의 후속 작업은 M8 사용성 회귀 점검과 M9 릴리스 준비 기준 정리로 이어지는 흐름이다.
-- 구현 착수 전에는 실제 사용 흐름에서 UI 파손, 접근성 회귀, CSV 상호작용, 문서 범위 불일치를 먼저 확인하는 것이 안전하다.
+- 웹 MVP 핵심 기능, Web CSV preview QA, 모바일 M8 usability/accessibility, M9 release readiness baseline, 문서 정합성 정리는 완료되어 main에 반영됐다.
+- iPad native smoke의 `simctl openurl` timeout은 LAN mode recheck에서 해소됐다. iPad smoke는 `npm run ios -- --lan --port <free-port>` 경로를 우선 사용한다.
+- Web/Mobile CSV import/export는 공유 domain 포맷의 round-trip 테스트가 추가됐다.
+- 현재 release readiness 기준은 Expo Go verification, local iPhone/iPad Simulator smoke, static web export fallback이다.
+- EAS preview, TestFlight, App Store 제출은 아직 선택된 산출물이 아니며 별도 release phase로 둔다.
 
-## 추천 진행 순서
+## 다음 추천 진행 순서
 
-1. M8 Mobile usability regression pass
-2. Mobile smoke / accessibility verification
-3. Web CSV preview manual QA
-4. M9 Release readiness baseline
-5. Documentation consistency cleanup
+1. Mobile local native build decision
+   - Expo Go 기준을 유지할지, local native build를 첫 installable artifact로 올릴지 결정한다.
+   - EAS/TestFlight는 local native build 필요성이 확인된 뒤 선택한다.
+2. Mobile repository/data migration regression coverage
+   - `expo-sqlite` migration, seed, CRUD repository 흐름은 앱 품질 관점에서 다음으로 큰 자동화 공백이다.
+   - 가능하면 Expo 의존이 낮은 repository helper부터 테스트 가능한 경계로 분리한다.
+3. Mobile CSV file I/O smoke
+   - 공유 CSV round-trip은 자동화됐지만 document picker/share sheet는 native 파일 권한과 OS UI에 의존한다.
+   - 다음 native smoke cycle에서 import preview와 export share sheet evidence를 별도로 남긴다.
+4. Release privacy/store readiness draft
+   - local-only SQLite, CSV import/export, 외부 전송 없음, financial advice 아님을 App Store privacy 준비 문서로 정리한다.
+   - TestFlight를 선택할 때 필요한 screenshot/privacy/build number 항목을 체크리스트화한다.
+5. Ongoing documentation freshness pass
+   - 완료된 PR 번호와 현재 산출물 기준이 README, mobile docs, porting plan 사이에서 어긋나지 않는지 릴리스 단위로 점검한다.
 
-M8과 모바일 smoke는 서로 겹치는 부분이 있으므로 같은 검증 사이클에서 함께 수행할 수 있다. M9는 앱 산출물 기준을 정하는 작업이므로 M8에서 사용성 문제를 먼저 털고 진행하는 편이 좋다.
+완료 이력:
+
+- #22 M8 Mobile usability regression
+- #24 M9 Release readiness baseline
+- #25 Mobile smoke/accessibility verification
+- #26 Web CSV preview manual QA
+- #27 Documentation consistency cleanup
+- #28 iPad native smoke recheck
+- #29 CSV round-trip automation
+
+---
+
+## 완료된 이전 계획
+
+아래 섹션은 완료된 작업의 원래 명세다. 같은 유형의 회귀가 생기면 체크리스트로 재사용하되, 새 작업 우선순위는 위 `다음 추천 진행 순서`를 따른다.
 
 ---
 
@@ -412,11 +437,11 @@ git diff --cached --check
 
 ---
 
-## 구현 전 검토 질문
+## 다음 구현 전 검토 질문
 
 다음 구현 턴 전에 아래 결정을 먼저 하면 작업 범위가 깔끔해진다.
 
-1. M8은 native simulator까지 포함할지, Expo web fallback으로 먼저 볼지
-2. M9의 첫 산출물 기준을 Expo Go, local native build, EAS preview, TestFlight 중 어디까지로 둘지
-3. 문서 정합성 정리는 M8/M9 이후에 할지, 먼저 README만 정리할지
-4. 웹 CSV preview 수동 QA에서 생성한 테스트 데이터를 DB에 남기지 않는 방식으로 확인할지
+1. 모바일 첫 installable artifact를 아직 보류할지, local native build까지 올릴지
+2. `expo-sqlite` repository/migration 테스트를 어디까지 자동화할지
+3. CSV native file picker/share sheet 검증을 수동 evidence로 남길지, 별도 E2E 도구를 도입할지
+4. TestFlight를 선택하기 전에 privacy/store readiness 초안을 먼저 작성할지
