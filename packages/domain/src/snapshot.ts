@@ -55,8 +55,12 @@ export const assetCategories = [
 export const currencies = ["KRW", "USD"] as const;
 
 function hasTwoDecimalPrecision(value: number) {
-  return Number.isInteger(value * 100);
+  const scaled = value * 100;
+
+  return Math.abs(Math.round(scaled) - scaled) < 1e-8;
 }
+
+const snapshotMonthPattern = /^\d{4}-(0[1-9]|1[0-2])$/;
 
 export function createSnapshotSchema(locale: Locale) {
   const validation = getSnapshotValidationMessages(locale);
@@ -64,7 +68,7 @@ export function createSnapshotSchema(locale: Locale) {
   return z.object({
     snapshotMonth: z
       .string()
-      .regex(/^\d{4}-\d{2}$/, validation.useYYYYMM),
+      .regex(snapshotMonthPattern, validation.useYYYYMM),
     accountId: z.string().min(1),
     market: z.enum(markets),
     assetCategory: z.enum(assetCategories),
@@ -100,7 +104,7 @@ export function importSnapshotCsvRowSchema(locale: Locale) {
       .min(1, validation.accountRequired),
     snapshotMonth: z
       .string()
-      .regex(/^\d{4}-\d{2}$/, validation.useYYYYMM),
+      .regex(snapshotMonthPattern, validation.useYYYYMM),
     market: z.enum(markets),
     assetCategory: z.enum(assetCategories),
     assetName: z

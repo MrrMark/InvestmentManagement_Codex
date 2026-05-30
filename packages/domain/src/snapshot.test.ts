@@ -40,6 +40,62 @@ test("createSnapshotSchema rejects invalid month and enum", () => {
   assert.equal(result.success, false);
 });
 
+test("snapshot schemas reject out-of-range months", () => {
+  const createResult = createSnapshotSchema("en").safeParse({
+    snapshotMonth: "2026-13",
+    accountId: "account-cma",
+    market: "KR",
+    assetCategory: "ETF",
+    assetName: "KODEX 200",
+    currency: "KRW",
+    amount: "1500000",
+    returnRate: "4.25",
+    memo: "",
+  });
+  const importResult = importSnapshotCsvRowSchema("en").safeParse({
+    accountName: "CMA",
+    snapshotMonth: "2026-00",
+    market: "KR",
+    assetCategory: "ETF",
+    assetName: "KODEX 200",
+    currency: "KRW",
+    amount: "1500000",
+    returnRate: "4.25",
+    memo: "",
+  });
+
+  assert.equal(createResult.success, false);
+  assert.equal(importResult.success, false);
+});
+
+test("return rate precision accepts two-decimal values despite floating point scaling", () => {
+  const validResult = importSnapshotCsvRowSchema("en").safeParse({
+    accountName: "CMA",
+    snapshotMonth: "2026-04",
+    market: "KR",
+    assetCategory: "ETF",
+    assetName: "KODEX 200",
+    currency: "KRW",
+    amount: "1500000",
+    returnRate: "4.56",
+    memo: "",
+  });
+  const invalidResult = importSnapshotCsvRowSchema("en").safeParse({
+    accountName: "CMA",
+    snapshotMonth: "2026-04",
+    market: "KR",
+    assetCategory: "ETF",
+    assetName: "KODEX 200",
+    currency: "KRW",
+    amount: "1500000",
+    returnRate: "4.567",
+    memo: "",
+  });
+
+  assert.equal(validResult.success, true);
+  assert.equal(invalidResult.success, false);
+});
+
 test("updateSnapshotSchema requires id", () => {
   const result = updateSnapshotSchema("en").safeParse({
     snapshotMonth: "2026-02",

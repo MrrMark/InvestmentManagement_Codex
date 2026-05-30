@@ -54,6 +54,7 @@ export function CsvImportForm({
   const [previewRows, setPreviewRows] = useState<SnapshotCsvImportPreviewRow[]>([]);
   const [validRows, setValidRows] = useState<ImportSnapshotCsvRowInput[]>([]);
   const [parseMessage, setParseMessage] = useState("");
+  const [previewErrors, setPreviewErrors] = useState<string[]>([]);
 
   async function handleFileChange(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -62,6 +63,7 @@ export function CsvImportForm({
       setPreviewRows([]);
       setValidRows([]);
       setParseMessage("");
+      setPreviewErrors([]);
       return;
     }
 
@@ -72,11 +74,12 @@ export function CsvImportForm({
       accountNames,
       unknownAccountPrefix: `${labels.unknownAccount}: `,
     });
+    setPreviewErrors(preview.errors);
 
     if (preview.rows.length === 0) {
       setPreviewRows([]);
       setValidRows([]);
-      setParseMessage(labels.csvEmpty);
+      setParseMessage(preview.errors.length > 0 ? "" : labels.csvEmpty);
       return;
     }
 
@@ -108,7 +111,24 @@ export function CsvImportForm({
 
         <p className="text-sm text-stone-600">{labels.requiredHeaders}</p>
 
-        {parseMessage ? <p className="text-sm text-stone-700">{parseMessage}</p> : null}
+        {parseMessage ? (
+          <p aria-live="polite" className="text-sm text-stone-700">
+            {parseMessage}
+          </p>
+        ) : null}
+
+        {previewErrors.length > 0 ? (
+          <div
+            role="alert"
+            className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800"
+          >
+            <ul className="space-y-1">
+              {previewErrors.map((error) => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
 
         <button
           type="submit"
