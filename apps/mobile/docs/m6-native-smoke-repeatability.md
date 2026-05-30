@@ -53,6 +53,15 @@ For iPad verification:
 4. Check iPad portrait.
 5. Rotate the simulator with Simulator's Device menu and check iPad landscape.
 
+If iPad `openurl` times out or Expo Go cannot connect to the development server, retry with LAN mode and an unused port:
+
+```bash
+cd apps/mobile
+npm run ios -- --lan --port 8085
+```
+
+In the 2026-05-30 recheck, localhost mode opened `exp://127.0.0.1:<port>` but Expo Go could not reach the bundle URL. LAN mode loaded the iOS bundle on iPad successfully.
+
 Suggested minimum device matrix:
 
 - One current iPhone simulator
