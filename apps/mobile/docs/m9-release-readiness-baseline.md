@@ -40,6 +40,8 @@ For the current MVP, the first mobile readiness target is:
 2. Local iPhone/iPad Simulator smoke
 3. Static web export smoke as a fallback
 
+2026-06-01 decision: keep the first readiness target non-installable for the next cycle. SQLite migration/seed/repository regression checks and CSV native file I/O smoke evidence are now documented; defer local native build until the privacy/store readiness draft is reviewed.
+
 Do not add EAS build requirements or CI Simulator requirements yet. Add `eas.json`, credentials setup, or store build profiles only after deciding to produce a local native build or EAS build artifact.
 
 ## Release Readiness Checks
@@ -48,6 +50,7 @@ Run these before treating the mobile app as release-baseline ready:
 
 ```bash
 npm test
+npm run test:mobile
 npm run build
 cd apps/mobile && npm run typecheck
 cd apps/mobile && npm run lint

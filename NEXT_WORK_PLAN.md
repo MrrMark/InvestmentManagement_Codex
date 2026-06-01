@@ -14,23 +14,20 @@
 - iPad native smoke의 `simctl openurl` timeout은 LAN mode recheck에서 해소됐다. iPad smoke는 `npm run ios -- --lan --port <free-port>` 경로를 우선 사용한다.
 - Web/Mobile CSV import/export는 공유 domain 포맷의 round-trip 테스트가 추가됐다.
 - 현재 release readiness 기준은 Expo Go verification, local iPhone/iPad Simulator smoke, static web export fallback이다.
+- 2026-06-01 기준 모바일 첫 installable artifact는 아직 보류한다. local native build는 SQLite repository 회귀 테스트와 CSV native file I/O smoke evidence를 먼저 채운 뒤 다시 결정한다.
+- 모바일 SQLite migration, seed, repository CRUD/import와 CSV file I/O 경계 회귀 테스트는 `npm run test:mobile`로 실행한다.
+- Mobile CSV file I/O smoke는 M10 문서로 정리됐다. iOS Document Picker 진입과 export share sheet 진입은 확인했고, 실제 파일 선택은 TestFlight/local native build 전에 hands-on으로 한 번 더 확인한다.
 - EAS preview, TestFlight, App Store 제출은 아직 선택된 산출물이 아니며 별도 release phase로 둔다.
 
 ## 다음 추천 진행 순서
 
-1. Mobile local native build decision
-   - Expo Go 기준을 유지할지, local native build를 첫 installable artifact로 올릴지 결정한다.
-   - EAS/TestFlight는 local native build 필요성이 확인된 뒤 선택한다.
-2. Mobile repository/data migration regression coverage
-   - `expo-sqlite` migration, seed, CRUD repository 흐름은 앱 품질 관점에서 다음으로 큰 자동화 공백이다.
-   - 가능하면 Expo 의존이 낮은 repository helper부터 테스트 가능한 경계로 분리한다.
-3. Mobile CSV file I/O smoke
-   - 공유 CSV round-trip은 자동화됐지만 document picker/share sheet는 native 파일 권한과 OS UI에 의존한다.
-   - 다음 native smoke cycle에서 import preview와 export share sheet evidence를 별도로 남긴다.
-4. Release privacy/store readiness draft
+1. Release privacy/store readiness draft
    - local-only SQLite, CSV import/export, 외부 전송 없음, financial advice 아님을 App Store privacy 준비 문서로 정리한다.
    - TestFlight를 선택할 때 필요한 screenshot/privacy/build number 항목을 체크리스트화한다.
-5. Ongoing documentation freshness pass
+2. Mobile local native build recheck
+   - 위 native file I/O smoke와 privacy/store readiness 초안을 확인한 뒤 local native build를 첫 installable artifact로 올릴지 다시 결정한다.
+   - EAS/TestFlight는 local native build 필요성이 확인된 뒤 선택한다.
+3. Ongoing documentation freshness pass
    - 완료된 PR 번호와 현재 산출물 기준이 README, mobile docs, porting plan 사이에서 어긋나지 않는지 릴리스 단위로 점검한다.
 
 완료 이력:
@@ -42,6 +39,7 @@
 - #27 Documentation consistency cleanup
 - #28 iPad native smoke recheck
 - #29 CSV round-trip automation
+- M10 Mobile CSV file I/O smoke evidence
 
 ---
 
