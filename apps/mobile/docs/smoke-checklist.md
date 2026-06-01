@@ -6,6 +6,7 @@ Run these from the repository root unless noted.
 
 ```bash
 npm test
+npm run test:mobile
 npm run build
 cd apps/mobile && npm run typecheck
 cd apps/mobile && npm run lint
@@ -40,6 +41,7 @@ Look for:
 - Add/Edit form remains centered and readable on iPad
 - CSV import panel buttons and preview rows wrap cleanly
 - empty, error, and result states are visible and readable
+- for CSV native file I/O evidence, use [M10 CSV File I/O Smoke Evidence](m10-csv-file-io-smoke.md)
 
 ## Native iOS Smoke
 

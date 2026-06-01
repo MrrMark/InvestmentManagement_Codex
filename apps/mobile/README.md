@@ -40,14 +40,20 @@ iPhone/iPad용 월간 자산 스냅샷 앱입니다. 현재 단계는 Expo Route
 
 - [Release readiness baseline](docs/m9-release-readiness-baseline.md)
 
+## M10 QA Docs
+
+- [CSV file I/O smoke evidence](docs/m10-csv-file-io-smoke.md)
+
 ## 진행 상태
 
 - M6 Native smoke repeatability 완료
 - M7 Mobile data safety polish 완료
 - M8 Mobile usability regression pass 완료
 - M9 Release readiness baseline 완료
+- M10 CSV file I/O smoke evidence 완료
 
 후속 릴리즈 작업은 local native build, EAS build, TestFlight/App Store 제출 중 어느 산출물을 목표로 할지 결정한 뒤 별도 범위로 진행합니다.
+2026-06-01 기준 첫 installable artifact는 아직 보류하며, 다음 작업은 privacy/store readiness 초안입니다.
 
 ## Current Scope
 
@@ -66,3 +72,11 @@ iPhone/iPad용 월간 자산 스냅샷 앱입니다. 현재 단계는 Expo Route
 - React Native 0.83
 - Expo Router
 - TypeScript strict
+
+## Regression Checks
+
+루트에서 모바일 DB 회귀 테스트를 실행합니다.
+
+```bash
+npm run test:mobile
+```
